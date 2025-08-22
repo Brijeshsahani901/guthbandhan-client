@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  // baseURL: "https://guthbandhan.com/api",
-  baseURL: "http://localhost:7000/api",
+  baseURL: "https://guthbandhan.com/api",
+  //baseURL: "http://localhost:7000/api",
   withCredentials: false,
 });
 
