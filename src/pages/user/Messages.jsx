@@ -466,15 +466,7 @@ const Messages = () => {
     }
   }, [selectedConversation]);
 
-  // useEffect(() => {
-  //   socket.on("receive-message", (msg) => {
-  //     console.log(msg)
-  //     setMessages((prev = []) => [...prev, msg]);
-  //   });
-  //   return () => {
-  //     socket.off("receive-message");
-  //   };
-  // }, []);
+
 
   useEffect(() => {
     socket.on("receive-message", (msg) => {
