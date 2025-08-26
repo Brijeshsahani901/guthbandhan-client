@@ -1,21 +1,20 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { useDebounce } from 'use-debounce';
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useDebounce } from "use-debounce";
 import ProfileCard from "../components/profile/ProfileCard";
 import ProfileFilter from "../components/profile/ProfileFilter";
 import { toast } from "react-toastify";
-import { useQuery,useMutation } from "@tanstack/react-query";
-import { getAllProfile,searchProfiles } from "../api/profile";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getAllProfile, searchProfiles } from "../api/profile";
 import React from "react";
 
 import { motion } from "framer-motion";
 
-
 export default function Browse() {
   const [filters, setFilters] = useState({});
   const [debouncedFilters] = useDebounce(filters, 500);
- const { user } = useAuth(); 
+  const { user } = useAuth();
   const {
     data,
     isLoading,
@@ -25,37 +24,36 @@ export default function Browse() {
     isFetchingNextPage,
     isFetching,
   } = useInfiniteQuery({
-    queryKey: ['profiles', debouncedFilters],
+    queryKey: ["profiles", debouncedFilters],
     queryFn: ({ pageParam = 1 }) =>
-      searchProfiles({ ...debouncedFilters, page: pageParam }),
+      searchProfiles({ ...debouncedFilters, page: pageParam,limit: 12  }),
     getNextPageParam: (lastPage) => {
-      const next = lastPage.page < lastPage.pages ? lastPage.page + 1 : undefined;
+      const next =
+        lastPage.page < lastPage.pages ? lastPage.page + 1 : undefined;
       return next;
     },
-     keepPreviousData: true,
-    enabled: !!user 
+    keepPreviousData: true,
+    enabled: !!user,
   });
 
   if (!user) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-      className="pt-24 pb-16 container mx-auto px-4 text-center mt-20"
-    >
-      <h2
-        className="text-3xl font-semi-bold mb-4 bg-gradient-to-r from-red-600 via-pink-500 to-purple-600 bg-clip-text text-transparent"
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="pt-24 pb-16 container mx-auto px-4 text-center mt-20"
       >
-        You have to login first to browse profiles
-      </h2>
-    </motion.div>
-  );
-}
+        <h2 className="text-3xl font-semi-bold mb-4 bg-gradient-to-r from-red-600 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+          You have to login first to browse profiles
+        </h2>
+      </motion.div>
+    );
+  }
 
   const handleFilterChange = (newFilters) => {
     setFilters({ ...newFilters, page: 1 });
-    toast.success('Filters applied');
+    toast.success("Filters applied");
   };
 
   return (
@@ -82,7 +80,7 @@ export default function Browse() {
                   <ProfileCard
                     key={profile._id || profile.id}
                     profile={profile}
-                    onSave={() => toast.success('Saved')}
+                    onSave={() => toast.success("Saved")}
                   />
                 ))}
               </React.Fragment>
@@ -96,7 +94,7 @@ export default function Browse() {
                 disabled={isFetchingNextPage}
                 className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
-                {isFetchingNextPage ? 'Loading...' : 'Load More'}
+                {isFetchingNextPage ? "Loading..." : "Load More"}
               </button>
             ) : (
               <p className="text-gray-500">No more profiles to load</p>

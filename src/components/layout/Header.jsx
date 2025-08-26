@@ -48,8 +48,8 @@ const Header = ({ isScrolled }) => {
         <nav className="hidden md:flex items-center space-x-1">
           <NavLink to="/" className={navLinkClass} end>Home</NavLink>
           <NavLink to="/browse" className={navLinkClass}>Browse</NavLink>
-          <NavLink to="/plans" className={navLinkClass}>Plans</NavLink>
-          <NavLink to="/about" className={navLinkClass}>About</NavLink>
+          {/* <NavLink to="/plans" className={navLinkClass}>Plans</NavLink> */}
+          {/* <NavLink to="/about" className={navLinkClass}>About</NavLink> */}
           <NavLink to="/wedding-services" className={navLinkClass}>Wedding Services</NavLink>
         </nav>
 
@@ -143,8 +143,9 @@ const Header = ({ isScrolled }) => {
               <nav className="flex flex-col space-y-2 mb-4">
                 <NavLink to="/" className={navLinkClass} end>Home</NavLink>
                 <NavLink to="/browse" className={navLinkClass}>Browse</NavLink>
-                <NavLink to="/plans" className={navLinkClass}>Plans</NavLink>
-                <NavLink to="/about" className={navLinkClass}>About</NavLink>
+                {/* <NavLink to="/plans" className={navLinkClass}>Plans</NavLink> */}
+                {/* <NavLink to="/about" className={navLinkClass}>About</NavLink> */}
+                 <NavLink to="/wedding-services" className={navLinkClass}>Wedding Services</NavLink>
               </nav>
               
               {isAuthenticated ? (

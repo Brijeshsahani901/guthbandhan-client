@@ -122,6 +122,7 @@ const ProfileCard = ({ profile, showActions = true }) => {
         error?.response?.data?.message || "Failed to remove from shortlist"
       ),
   });
+
   const toggleShortlist = () => {
     if (!user?.profile_id) {
       toast.error("You must complete your profile first.");
@@ -139,6 +140,21 @@ const ProfileCard = ({ profile, showActions = true }) => {
       shortlistMutation.mutate(payload);
     }
   };
+
+  const calculateAge = (dob) => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  return age;
+};
+
 
   return (
     <motion.div
@@ -190,9 +206,10 @@ const ProfileCard = ({ profile, showActions = true }) => {
       {/* Info */}
       <div className="p-4">
         <div className="flex flex-wrap gap-2 mb-3">
-           <h3 className="text-xl font-bold">
-            {profile.first_name}, {profile.age}
-          </h3>
+         <h3 className="text-xl font-bold">
+  {profile.first_name}, {calculateAge(profile.dob) || ""} 
+</h3>
+
           <p className="text-sm">{profile.location}</p><br/>
           {profile?.hobby
             ?.split(",")

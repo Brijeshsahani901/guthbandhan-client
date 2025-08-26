@@ -9,7 +9,7 @@ const PricingPlans = () => {
     {
       name: 'Basic',
       description: 'Essential features to start your journey',
-      monthlyPrice: 0,
+      monthlyPrice: 100,
       yearlyPrice: 0,
       features: [
         'Create your profile',
@@ -24,7 +24,7 @@ const PricingPlans = () => {
     {
       name: 'Premium',
       description: 'Full access to find your perfect match',
-      monthlyPrice: 19.99,
+      monthlyPrice: 300.99,
       yearlyPrice: 199.99,
       features: [
         'All Basic features',
@@ -40,7 +40,7 @@ const PricingPlans = () => {
     {
       name: 'VIP',
       description: 'Enhanced experience with personalized support',
-      monthlyPrice: 39.99,
+      monthlyPrice: 500.99,
       yearlyPrice: 399.99,
       features: [
         'All Premium features',
@@ -116,7 +116,7 @@ const PricingPlans = () => {
                 
                 <div className="mb-6">
                   <span className="text-4xl font-bold">
-                    ${billingCycle === 'monthly' ? plan.monthlyPrice.toFixed(2) : plan.yearlyPrice.toFixed(2)}
+                    ₹{billingCycle === 'monthly' ? plan.monthlyPrice.toFixed(2) : plan.yearlyPrice.toFixed(2)}
                   </span>
                   <span className="text-neutral-500">
                     /{billingCycle === 'monthly' ? 'month' : 'year'}
@@ -136,7 +136,7 @@ const PricingPlans = () => {
                 </ul>
                 
                 <Link
-                  to="/plans"
+                  to="#"
                   className={`w-full text-center py-3 px-6 rounded-lg font-medium transition-colors ${
                     plan.popular
                       ? 'bg-primary-600 hover:bg-primary-700 text-white'

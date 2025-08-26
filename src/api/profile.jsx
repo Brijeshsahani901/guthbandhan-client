@@ -52,12 +52,24 @@ export const getAllProfile = async ({ page = 1, limit = 10 } = {}) => {
   }
 };
 
-export const searchProfiles = async (params) => {
-  const response = await axiosInstance.get("/profile/search", {
-    params,
-  });
-  return response.data;
+export const searchProfiles = async (params = {}) => {
+  const { page = 1, limit = 10, ...restParams } = params;
+
+  try {
+    const response = await axiosInstance.get("/profile/search", {
+      params: {
+        ...restParams,
+        page,
+        limit,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to search profiles:", error);
+    throw error;
+  }
 };
+
 
 
 export const updateProfile = async (id, profileData) => {

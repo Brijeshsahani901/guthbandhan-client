@@ -286,7 +286,7 @@ import { expressInterest, searchInterestByProfiles } from "../api/interest.api";
 const ProfileDetail = () => {
   const { id } = useParams();
   const queryClient = useQueryClient();
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const [profile, setProfile] = useState([]);
   const [activePhotoIndex, setActivePhotoIndex] = React.useState(0);
@@ -320,7 +320,6 @@ const ProfileDetail = () => {
     // refetchOnMount: true,
   });
 
-
   const { mutate: expressInterestsent, isPending: isExpressing } = useMutation({
     mutationFn: () =>
       expressInterest({
@@ -338,6 +337,10 @@ const ProfileDetail = () => {
   });
 
   const handleInterest = () => {
+    if (!user?.profile_id) {
+      toast.error("You must complete your profile first.");
+      return;
+    }
     if (!isAuthenticated) {
       toast.info("Please sign in to express interest");
       return;
@@ -346,16 +349,7 @@ const ProfileDetail = () => {
   };
 
 
-
-  const handleSaveProfile = () => {
-    if (!isAuthenticated) {
-      toast.info("Please sign in to save profiles");
-      return;
-    }
-    toast.success("Profile saved successfully");
-  };
-
- const handleMessage = () => {
+  const handleMessage = () => {
     if (!isAuthenticated) {
       toast.info("Please sign in to send messages");
       return;
@@ -363,7 +357,6 @@ const ProfileDetail = () => {
     // Navigate to messages with the profile ID
     navigate(`/user/messages/${profile.profile_id}`);
   };
-
 
   const handleReport = (e) => {
     e.preventDefault();
@@ -441,11 +434,11 @@ const ProfileDetail = () => {
               ) : (
                 <div className="aspect-square rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-400">
                   {/* No Photos Available */}
-                   <img
-                          src="/gutbandhan.png"
-                          alt="mage"
-                          className="w-full h-full object-contain"
-                        />
+                  <img
+                    src="/gutbandhan.png"
+                    alt="mage"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
               )}
             </div>
