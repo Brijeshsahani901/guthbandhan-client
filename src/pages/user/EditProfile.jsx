@@ -427,7 +427,7 @@ const EditProfile = () => {
     manglik: "U",
     birth_place: "",
     native_place: "",
-    mobile: user?.mobile || "",
+    mobile: user?.phone || "",
     mobile_verified: "N",
     edu_career_about: "",
     education: "",
@@ -714,7 +714,7 @@ const EditProfile = () => {
 
 
   return (
-    <div className="container-custom py-8">
+    <div className="container-custom py-8 mt-20">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

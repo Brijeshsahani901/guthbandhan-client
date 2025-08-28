@@ -118,7 +118,7 @@ const handleReset = () => {
               name="sex"
               value={filters.sex}
               onChange={handleChange}
-              options={[{ label: 'All', value: '' }, { label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }]}
+              options={[{ label: 'All', value: '' }, { label: 'Male', value: 'M' }, { label: 'Female', value: 'F' }]}
             />
             {/* Marital Status */}
             <SelectField
