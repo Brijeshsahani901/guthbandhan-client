@@ -1,11 +1,11 @@
  export const validateUserInput = (data) => {
     const errors = {};
 
-    // if (!data.username.trim()) {
-    //   errors.username = "Username is required";
-    // } else if (data.username.length < 3) {
-    //   errors.username = "Username must be at least 3 characters";
-    // }
+    if (!data.username.trim()) {
+      errors.username = "Rotary Membership no. is required";
+    } else if (data.username.length < 8) {
+      errors.username = "Rotary Membership no. must be at least 8 characters";
+    }
 
     if (!data.name.trim()) {
       errors.name = "Name is required";
@@ -40,11 +40,11 @@
       errors.confirmPassword = "Passwords do not match";
     }
 
-    // if (!data.mobile.trim()) {
-    //   errors.mobile = "Mobile number is required";
-    // } else if (!/^\+?\d{10,15}$/.test(data.mobile)) {
-    //   errors.mobile = "Invalid mobile number";
-    // }
+    if (!data.phone.trim()) {
+      errors.phone = "Phone number is required";
+    } else if (!/^\+?\d{10,15}$/.test(data.phone)) {
+      errors.phone = "Invalid mobile number";
+    }
 
     return errors;
   };

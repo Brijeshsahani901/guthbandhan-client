@@ -68,8 +68,6 @@ const Register = () => {
     }));
   };
 
-
-
   const handleSubmit = () => {
     const errors = validateUserInput(userData);
     if (Object.keys(errors).length > 0) {
@@ -91,10 +89,8 @@ const Register = () => {
       navigate("/auth/login");
     },
     onError: (error) => {
-      console.error(error)
-      toast.error(
-        error?.message || "Registration failed. Please try again."
-      );
+      console.error(error);
+      toast.error(error?.message || "Registration failed. Please try again.");
     },
   });
 
@@ -169,26 +165,6 @@ const Register = () => {
         {/* Left Column */}
         <div className="space-y-4">
           {/* Username */}
-          {/* <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-neutral-700 mb-1"
-            >
-              Username *
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={userData.username}
-              onChange={handleUserChange}
-              className={`input ${formErrors.username ? "border-red-500" : ""}`}
-              placeholder="Choose a username"
-            />
-            {formErrors.username && (
-              <p className="text-red-500 text-sm">{formErrors.username}</p>
-            )}
-          </div> */}
 
           {/* Name */}
           <div>
@@ -233,7 +209,7 @@ const Register = () => {
               <p className="text-red-500 text-sm">{formErrors.email}</p>
             )}
           </div>
-             <div>
+          <div>
             <label
               htmlFor="confirmPassword"
               className="block text-sm font-medium text-neutral-700 mb-1"
@@ -261,12 +237,12 @@ const Register = () => {
 
         {/* Right Column */}
         <div className="space-y-4">
-           <div>
+          <div>
             <label
               htmlFor="phone"
               className="block text-sm font-medium text-neutral-700 mb-1"
             >
-              Phone Number
+              Phone Number *
             </label>
             <input
               type="text"
@@ -282,6 +258,7 @@ const Register = () => {
             )}
           </div>
           {/* Password */}
+
           <div>
             <label
               htmlFor="password"
@@ -303,8 +280,26 @@ const Register = () => {
             )}
           </div>
 
-          {/* Confirm Password */}
-       
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-neutral-700 mb-1"
+            >
+              Rotary Membership no.*
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={userData.username}
+              onChange={handleUserChange}
+              className={`input ${formErrors.username ? "border-red-500" : ""}`}
+              placeholder="Choose a username"
+            />
+            {formErrors.username && (
+              <p className="text-red-500 text-sm">{formErrors.username}</p>
+            )}
+          </div>
 
           {/* Mobile */}
           {/* <div>
@@ -330,19 +325,17 @@ const Register = () => {
           </div> */}
 
           {/* Submit Button */}
-         
         </div>
-        
       </motion.div>
-       <div className="pt-6">
-            <button
-              type="button"
-              onClick={handleSubmit}
-              className="btn-primary w-full"
-            >
-              Submit
-            </button>
-          </div>
+      <div className="pt-6">
+        <button
+          type="button"
+          onClick={handleSubmit}
+          className="btn-primary w-full"
+        >
+          Submit
+        </button>
+      </div>
 
       <p className="text-center text-neutral-600 mt-8">
         Already have an account?{" "}
