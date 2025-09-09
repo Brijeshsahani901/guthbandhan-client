@@ -1,382 +1,3 @@
-// import { useState } from 'react'
-// import { useAuth } from '../../context/AuthContext'
-// import { toast } from 'react-toastify'
-// import { motion } from 'framer-motion'
-
-// const EditProfile = () => {
-//   const { user, updateUser } = useAuth()
-//   const [loading, setLoading] = useState(false)
-//   const [formData, setFormData] = useState({
-//     name: user?.name || '',
-//     email: user?.email || '',
-//     bio: user?.bio || '',
-//     location: user?.location || '',
-//     birthdate: user?.birthdate || '',
-//     gender: user?.gender || '',
-//     occupation: user?.occupation || '',
-//     education: user?.education || '',
-//     interests: user?.interests || [],
-//     lookingFor: user?.lookingFor || '',
-//     photos: user?.photos || [],
-//   })
-
-//   const interestOptions = [
-//     'Travel', 'Fitness', 'Reading', 'Cooking', 'Music',
-//     'Art', 'Technology', 'Sports', 'Movies', 'Photography',
-//     'Nature', 'Gaming', 'Dancing', 'Writing', 'Fashion'
-//   ]
-
-//   const handleChange = (e) => {
-//     const { name, value, type, checked } = e.target
-
-//     if (type === 'checkbox') {
-//       if (name === 'interests') {
-//         const updatedInterests = checked
-//           ? [...formData.interests, value]
-//           : formData.interests.filter(interest => interest !== value)
-
-//         setFormData(prev => ({
-//           ...prev,
-//           interests: updatedInterests
-//         }))
-//       } else {
-//         setFormData(prev => ({
-//           ...prev,
-//           [name]: checked
-//         }))
-//       }
-//     } else {
-//       setFormData(prev => ({
-//         ...prev,
-//         [name]: value
-//       }))
-//     }
-//   }
-
-//   const handlePhotoUpload = (e) => {
-//     const files = Array.from(e.target.files)
-//     const maxFiles = 6
-//     const maxSize = 5 * 1024 * 1024 // 5MB
-
-//     if (files.length + formData.photos.length > maxFiles) {
-//       toast.error(`You can only upload up to ${maxFiles} photos`)
-//       return
-//     }
-
-//     const invalidFiles = files.filter(file => file.size > maxSize)
-//     if (invalidFiles.length > 0) {
-//       toast.error('Some files are too large. Maximum size is 5MB per photo.')
-//       return
-//     }
-
-//     // In a real app, you would upload these to a server
-//     const newPhotos = files.map(file => URL.createObjectURL(file))
-//     setFormData(prev => ({
-//       ...prev,
-//       photos: [...prev.photos, ...newPhotos]
-//     }))
-//   }
-
-//   const removePhoto = (index) => {
-//     setFormData(prev => ({
-//       ...prev,
-//       photos: prev.photos.filter((_, i) => i !== index)
-//     }))
-//   }
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault()
-//     setLoading(true)
-
-//     try {
-//       // Simulate API call
-//       await new Promise(resolve => setTimeout(resolve, 1000))
-
-//       updateUser({
-//         ...user,
-//         ...formData
-//       })
-
-//       toast.success('Profile updated successfully!')
-//     } catch (error) {
-//       toast.error('Failed to update profile. Please try again.')
-//     } finally {
-//       setLoading(false)
-//     }
-//   }
-
-//   return (
-//     <div className="container-custom py-8">
-//       <motion.div
-//         initial={{ opacity: 0, y: 20 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         transition={{ duration: 0.5 }}
-//         className="max-w-3xl mx-auto"
-//       >
-//         <h1 className="text-3xl font-bold mb-8">Edit Profile</h1>
-
-//         <form onSubmit={handleSubmit} className="space-y-6">
-//           {/* Photos Section */}
-//           <div className="bg-white p-6 rounded-xl shadow-sm">
-//             <h2 className="text-xl font-semibold mb-4">Profile Photos</h2>
-//             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
-//               {formData.photos.map((photo, index) => (
-//                 <div key={index} className="relative aspect-square">
-//                   <img
-//                     src={photo}
-//                     alt={`Profile photo ${index + 1}`}
-//                     className="w-full h-full object-cover rounded-lg"
-//                   />
-//                   <button
-//                     type="button"
-//                     onClick={() => removePhoto(index)}
-//                     className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-//                   >
-//                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-//                       <line x1="18" y1="6" x2="6" y2="18"></line>
-//                       <line x1="6" y1="6" x2="18" y2="18"></line>
-//                     </svg>
-//                   </button>
-//                 </div>
-//               ))}
-//               {formData.photos.length < 6 && (
-//                 <label className="aspect-square border-2 border-dashed border-neutral-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-primary-500 transition-colors">
-//                   <input
-//                     type="file"
-//                     accept="image/*"
-//                     multiple
-//                     onChange={handlePhotoUpload}
-//                     className="hidden"
-//                   />
-//                   <div className="text-center">
-//                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-//                       <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
-//                       <line x1="16" y1="5" x2="22" y2="5"></line>
-//                       <line x1="19" y1="2" x2="19" y2="8"></line>
-//                       <circle cx="9" cy="9" r="2"></circle>
-//                       <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
-//                     </svg>
-//                     <span className="text-sm text-neutral-500">Add Photo</span>
-//                   </div>
-//                 </label>
-//               )}
-//             </div>
-//             <p className="text-sm text-neutral-500">
-//               Add up to 6 photos. First photo will be your main profile picture.
-//             </p>
-//           </div>
-
-//           {/* Basic Info */}
-//           <div className="bg-white p-6 rounded-xl shadow-sm">
-//             <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//               <div>
-//                 <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">
-//                   Full Name
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="name"
-//                   name="name"
-//                   value={formData.name}
-//                   onChange={handleChange}
-//                   className="input"
-//                   required
-//                 />
-//               </div>
-
-//               <div>
-//                 <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
-//                   Email
-//                 </label>
-//                 <input
-//                   type="email"
-//                   id="email"
-//                   name="email"
-//                   value={formData.email}
-//                   onChange={handleChange}
-//                   className="input"
-//                   required
-//                 />
-//               </div>
-
-//               <div>
-//                 <label htmlFor="birthdate" className="block text-sm font-medium text-neutral-700 mb-1">
-//                   Date of Birth
-//                 </label>
-//                 <input
-//                   type="date"
-//                   id="birthdate"
-//                   name="birthdate"
-//                   value={formData.birthdate}
-//                   onChange={handleChange}
-//                   className="input"
-//                   required
-//                 />
-//               </div>
-
-//               <div>
-//                 <label htmlFor="gender" className="block text-sm font-medium text-neutral-700 mb-1">
-//                   Gender
-//                 </label>
-//                 <select
-//                   id="gender"
-//                   name="gender"
-//                   value={formData.gender}
-//                   onChange={handleChange}
-//                   className="input"
-//                   required
-//                 >
-//                   <option value="">Select gender</option>
-//                   <option value="male">Male</option>
-//                   <option value="female">Female</option>
-//                   <option value="non-binary">Non-binary</option>
-//                   <option value="other">Other</option>
-//                 </select>
-//               </div>
-
-//               <div className="md:col-span-2">
-//                 <label htmlFor="bio" className="block text-sm font-medium text-neutral-700 mb-1">
-//                   Bio
-//                 </label>
-//                 <textarea
-//                   id="bio"
-//                   name="bio"
-//                   value={formData.bio}
-//                   onChange={handleChange}
-//                   rows="4"
-//                   className="input"
-//                   placeholder="Tell potential matches about yourself..."
-//                 ></textarea>
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Additional Info */}
-//           <div className="bg-white p-6 rounded-xl shadow-sm">
-//             <h2 className="text-xl font-semibold mb-4">Additional Information</h2>
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//               <div>
-//                 <label htmlFor="location" className="block text-sm font-medium text-neutral-700 mb-1">
-//                   Location
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="location"
-//                   name="location"
-//                   value={formData.location}
-//                   onChange={handleChange}
-//                   className="input"
-//                   placeholder="City, Country"
-//                 />
-//               </div>
-
-//               <div>
-//                 <label htmlFor="occupation" className="block text-sm font-medium text-neutral-700 mb-1">
-//                   Occupation
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="occupation"
-//                   name="occupation"
-//                   value={formData.occupation}
-//                   onChange={handleChange}
-//                   className="input"
-//                 />
-//               </div>
-
-//               <div>
-//                 <label htmlFor="education" className="block text-sm font-medium text-neutral-700 mb-1">
-//                   Education
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="education"
-//                   name="education"
-//                   value={formData.education}
-//                   onChange={handleChange}
-//                   className="input"
-//                 />
-//               </div>
-
-//               <div>
-//                 <label htmlFor="lookingFor" className="block text-sm font-medium text-neutral-700 mb-1">
-//                   Looking For
-//                 </label>
-//                 <select
-//                   id="lookingFor"
-//                   name="lookingFor"
-//                   value={formData.lookingFor}
-//                   onChange={handleChange}
-//                   className="input"
-//                 >
-//                   <option value="">Select what you're looking for</option>
-//                   <option value="Marriage">Marriage</option>
-//                   <option value="Long-term relationship">Long-term relationship</option>
-//                   <option value="Friendship first">Friendship first</option>
-//                   <option value="Casual dating">Casual dating</option>
-//                 </select>
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Interests */}
-//           <div className="bg-white p-6 rounded-xl shadow-sm">
-//             <h2 className="text-xl font-semibold mb-4">Interests</h2>
-//             <p className="text-sm text-neutral-600 mb-4">
-//               Select interests that define you. This helps us match you with compatible people.
-//             </p>
-//             <div className="flex flex-wrap gap-3">
-//               {interestOptions.map((interest) => (
-//                 <label
-//                   key={interest}
-//                   className={`cursor-pointer px-4 py-2 rounded-full transition-colors ${
-//                     formData.interests.includes(interest)
-//                       ? 'bg-primary-100 text-primary-700 border border-primary-300'
-//                       : 'bg-neutral-100 text-neutral-700 border border-neutral-200 hover:bg-neutral-200'
-//                   }`}
-//                 >
-//                   <input
-//                     type="checkbox"
-//                     name="interests"
-//                     value={interest}
-//                     checked={formData.interests.includes(interest)}
-//                     onChange={handleChange}
-//                     className="sr-only"
-//                   />
-//                   {interest}
-//                 </label>
-//               ))}
-//             </div>
-//           </div>
-
-//           {/* Submit Button */}
-//           <div className="flex justify-end">
-//             <button
-//               type="submit"
-//               disabled={loading}
-//               className="btn-primary"
-//             >
-//               {loading ? (
-//                 <span className="flex items-center">
-//                   <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-//                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-//                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-//                   </svg>
-//                   Saving Changes...
-//                 </span>
-//               ) : (
-//                 'Save Changes'
-//               )}
-//             </button>
-//           </div>
-//         </form>
-//       </motion.div>
-//     </div>
-//   )
-// }
-
-// export default EditProfile
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
@@ -402,8 +23,8 @@ const EditProfile = () => {
     profile_created: false,
     created_by: user?._id || "",
     created_for: "Myself",
-    first_name: user?.first_name || "",
-    last_name: user?.last_name || "",
+    first_name: user?.name || "",
+    last_name: "",
     email: user?.email || "",
     residing_city: "",
     residing_state: "",
@@ -583,26 +204,98 @@ const EditProfile = () => {
     },
   });
 
-  // Form validation
   const validateForm = () => {
     const newErrors = {};
+
+    // Required fields validation
     if (!formData.first_name) newErrors.first_name = "First name is required";
     if (!formData.last_name) newErrors.last_name = "Last name is required";
     if (!formData.email) newErrors.email = "Email is required";
     if (!formData.dob) newErrors.dob = "Date of birth is required";
     if (!formData.marital_status)
       newErrors.marital_status = "Marital status is required";
-    // if (!formData.sex) newErrors.sex = "Gender is required";
-    // if (!formData.religion) newErrors.religion = "Religion is required";
-    // if (!formData.caste) newErrors.caste = "Caste is required";
-    // if (!formData.mother_tongue)
-    //   newErrors.mother_tongue = "Mother tongue is required";
+    if (!formData.sex) newErrors.sex = "Gender is required";
+    if (!formData.religion) newErrors.religion = "Religion is required";
+    if (!formData.caste) newErrors.caste = "Caste is required";
+    if (!formData.mother_tongue)
+      newErrors.mother_tongue = "Mother tongue is required";
+    if (!formData.residing_city) newErrors.residing_city = "City is required";
+    if (!formData.residing_state)
+      newErrors.residing_state = "State is required";
+    if (!formData.residing_country)
+      newErrors.residing_country = "Country is required";
+    if (!formData.residing_status)
+      newErrors.residing_status = "Residing status is required";
+    if (!formData.body_type) newErrors.body_type = "Body type is required";
+    if (!formData.tob) newErrors.tob = "Time of birth is required";
+    if (!formData.height) newErrors.height = "Height is required";
+    if (!formData.weight) newErrors.weight = "Weight is required";
+    if (!formData.complexion) newErrors.complexion = "Complexion is required";
+    if (!formData.blood_group)
+      newErrors.blood_group = "Blood group is required";
+    // if (!formData.star) newErrors.star = "Star is required";
+    // if (!formData.sub_caste) newErrors.sub_caste = "Sub caste is required";
+    // if (!formData.raashi) newErrors.raashi = "Raashi is required";
+    if (!formData.manglik) newErrors.manglik = "Manglik status is required";
+    if (!formData.birth_place)
+      newErrors.birth_place = "Birth place is required";
+    if (!formData.native_place)
+      newErrors.native_place = "Native place is required";
+    if (!formData.mobile) newErrors.mobile = "Mobile number is required";
+    if (!formData.edu_career_about)
+      newErrors.edu_career_about = "Education/career information is required";
+    if (!formData.education) newErrors.education = "Education is required";
+    if (!formData.occupation) newErrors.occupation = "Occupation is required";
+    if (!formData.working_with)
+      newErrors.working_with = "Working with is required";
+    if (!formData.professional_area)
+      newErrors.professional_area = "Professional area is required";
+    if (!formData.eating_habit)
+      newErrors.eating_habit = "Eating habit is required";
+    if (!formData.physical_status)
+      newErrors.physical_status = "Physical status is required";
+    if (!formData.smoking) newErrors.smoking = "Smoking habit is required";
+    if (!formData.drinking) newErrors.drinking = "Drinking habit is required";
+    if (!formData.hobby) newErrors.hobby = "Hobby is required";
+    // if (!formData.photos || formData.photos.length === 0) newErrors.photos = "At least one photo is required";
+    if (!formData.annual_income)
+      newErrors.annual_income = "Annual income is required";
+    if (!formData.family_type)
+      newErrors.family_type = "Family type is required";
+    if (!formData.family_value)
+      newErrors.family_value = "Family value is required";
+    if (!formData.family_status)
+      newErrors.family_status = "Family status is required";
+    if (!formData.sisters) newErrors.sisters = "Number of sisters is required";
+    if (!formData.brothers)
+      newErrors.brothers = "Number of brothers is required";
+    if (!formData.brother_marital_status)
+      newErrors.brother_marital_status = "Brother marital status is required";
+    if (!formData.sister_marital_status)
+      newErrors.sister_marital_status = "Sister marital status is required";
+    if (!formData.mother_occupation)
+      newErrors.mother_occupation = "Mother's occupation is required";
+    if (!formData.father_occupation)
+      newErrors.father_occupation = "Father's occupation is required";
+    if (!formData.about) newErrors.about = "About section is required";
+    if (!formData.thalassemia)
+      newErrors.thalassemia = "Thalassemia status is required";
+    if (!formData.rotary_club)
+      newErrors.rotary_club = "Rotary club information is required";
+    if (!formData.district_no)
+      newErrors.district_no = "District number is required";
+    if (!formData.fb_url) newErrors.fb_url = "Facebook URL is required";
+    if (!formData.twitter_url)
+      newErrors.twitter_url = "Twitter URL is required";
+    if (!formData.gplus_url)
+      newErrors.gplus_url = "Google Plus URL is required";
+    if (!formData.linkedin_url)
+      newErrors.linkedin_url = "LinkedIn URL is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = () => {
     if (!validateForm()) return;
 
@@ -621,7 +314,6 @@ const EditProfile = () => {
       updateMutation.mutate(dataToSend);
     }
   };
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -712,7 +404,6 @@ const EditProfile = () => {
     "Fashion",
   ];
 
-
   return (
     <div className="container-custom py-8 mt-20">
       <motion.div
@@ -727,7 +418,7 @@ const EditProfile = () => {
             : "Edit Profile"}
         </h1>
 
-        {(!formData?.dob) && (
+        {!formData?.dob && (
           <div className="mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded">
             Please complete your profile to unlock all features.
           </div>
@@ -818,7 +509,9 @@ const EditProfile = () => {
                 name="created_for"
                 value={formData.created_for}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.created_for ? "border-red-500" : ""
+                }`}
               >
                 {createdForOptions.map((option) => (
                   <option key={option} value={option}>
@@ -826,6 +519,11 @@ const EditProfile = () => {
                   </option>
                 ))}
               </select>
+              {errors.created_for && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.created_for}
+                </p>
+              )}
             </div>
 
             <div>
@@ -888,9 +586,12 @@ const EditProfile = () => {
                 name="mobile"
                 value={formData.mobile}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.mobile ? "border-red-500" : ""}`}
                 placeholder="Enter mobile number"
               />
+              {errors.mobile && (
+                <p className="mt-1 text-sm text-red-600">{errors.mobile}</p>
+              )}
             </div>
 
             <div>
@@ -929,16 +630,19 @@ const EditProfile = () => {
 
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Time of Birth
+                Time of Birth *
               </label>
               <input
                 type="text"
                 name="tob"
                 value={formData.tob}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.tob ? "border-red-500" : ""}`}
                 placeholder="HH:MM AM/PM"
               />
+              {errors.tob && (
+                <p className="mt-1 text-sm text-red-600">{errors.tob}</p>
+              )}
             </div>
 
             <div>
@@ -977,7 +681,7 @@ const EditProfile = () => {
                 htmlFor="height"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Height (cm)
+                Height (cm) *
               </label>
               <input
                 type="text"
@@ -985,10 +689,13 @@ const EditProfile = () => {
                 name="height"
                 value={formData.height}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.height ? "border-red-500" : ""}`}
                 placeholder="Enter height"
                 maxLength="50"
               />
+              {errors.height && (
+                <p className="mt-1 text-sm text-red-600">{errors.height}</p>
+              )}
             </div>
 
             <div>
@@ -996,7 +703,7 @@ const EditProfile = () => {
                 htmlFor="weight"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Weight (kg)
+                Weight (kg) *
               </label>
               <input
                 type="text"
@@ -1004,10 +711,13 @@ const EditProfile = () => {
                 name="weight"
                 value={formData.weight}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.weight ? "border-red-500" : ""}`}
                 placeholder="Enter weight"
                 maxLength="50"
               />
+              {errors.weight && (
+                <p className="mt-1 text-sm text-red-600">{errors.weight}</p>
+              )}
             </div>
 
             <div>
@@ -1015,7 +725,7 @@ const EditProfile = () => {
                 htmlFor="body_type"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Body Type
+                Body Type *
               </label>
               <input
                 type="text"
@@ -1023,10 +733,13 @@ const EditProfile = () => {
                 name="body_type"
                 value={formData.body_type}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.body_type ? "border-red-500" : ""}`}
                 placeholder="e.g. Slim, Athletic"
                 maxLength="100"
               />
+              {errors.body_type && (
+                <p className="mt-1 text-sm text-red-600">{errors.body_type}</p>
+              )}
             </div>
 
             <div>
@@ -1034,7 +747,7 @@ const EditProfile = () => {
                 htmlFor="complexion"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Complexion
+                Complexion *
               </label>
               <input
                 type="text"
@@ -1042,10 +755,13 @@ const EditProfile = () => {
                 name="complexion"
                 value={formData.complexion}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.complexion ? "border-red-500" : ""}`}
                 placeholder="e.g. Fair, Wheatish"
                 maxLength="50"
               />
+              {errors.complexion && (
+                <p className="mt-1 text-sm text-red-600">{errors.complexion}</p>
+              )}
             </div>
 
             <div>
@@ -1053,7 +769,7 @@ const EditProfile = () => {
                 htmlFor="blood_group"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Blood Group
+                Blood Group *
               </label>
               <input
                 type="text"
@@ -1061,10 +777,17 @@ const EditProfile = () => {
                 name="blood_group"
                 value={formData.blood_group}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.blood_group ? "border-red-500" : ""
+                }`}
                 placeholder="e.g. A+"
                 maxLength="3"
               />
+              {errors.blood_group && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.blood_group}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1080,11 +803,17 @@ const EditProfile = () => {
                 name="physical_status"
                 value={formData.physical_status}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${
+                  errors.physical_status ? "border-red-500" : ""
+                }`}
                 placeholder="Describe physical status"
                 maxLength="150"
               />
+              {errors.physical_status && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.physical_status}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1092,7 +821,7 @@ const EditProfile = () => {
                 htmlFor="thalassemia"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Thalassemia Status
+                Thalassemia Status *
               </label>
               <input
                 type="text"
@@ -1100,10 +829,17 @@ const EditProfile = () => {
                 name="thalassemia"
                 value={formData.thalassemia}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.thalassemia ? "border-red-500" : ""
+                }`}
                 placeholder="If applicable"
                 maxLength="112"
               />
+              {errors.thalassemia && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.thalassemia}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1111,14 +847,14 @@ const EditProfile = () => {
                 htmlFor="smoking"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Smoking
+                Smoking *
               </label>
               <select
                 id="smoking"
                 name="smoking"
                 value={formData.smoking}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.smoking ? "border-red-500" : ""}`}
               >
                 {yesNoUnknownOptions.map((option) => (
                   <option key={option} value={option}>
@@ -1126,6 +862,9 @@ const EditProfile = () => {
                   </option>
                 ))}
               </select>
+              {errors.smoking && (
+                <p className="mt-1 text-sm text-red-600">{errors.smoking}</p>
+              )}
             </div>
 
             <div>
@@ -1133,14 +872,14 @@ const EditProfile = () => {
                 htmlFor="drinking"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Drinking
+                Drinking *
               </label>
               <select
                 id="drinking"
                 name="drinking"
                 value={formData.drinking}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.drinking ? "border-red-500" : ""}`}
               >
                 {yesNoUnknownOptions.map((option) => (
                   <option key={option} value={option}>
@@ -1148,6 +887,9 @@ const EditProfile = () => {
                   </option>
                 ))}
               </select>
+              {errors.drinking && (
+                <p className="mt-1 text-sm text-red-600">{errors.drinking}</p>
+              )}
             </div>
 
             <div>
@@ -1163,11 +905,17 @@ const EditProfile = () => {
                 name="eating_habit"
                 value={formData.eating_habit}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${
+                  errors.eating_habit ? "border-red-500" : ""
+                }`}
                 placeholder="e.g. Vegetarian, Non-vegetarian"
                 maxLength="20"
               />
+              {errors.eating_habit && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.eating_habit}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -1189,11 +937,17 @@ const EditProfile = () => {
                 name="residing_city"
                 value={formData.residing_city}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${
+                  errors.residing_city ? "border-red-500" : ""
+                }`}
                 placeholder="Current city"
                 maxLength="200"
               />
+              {errors.residing_city && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.residing_city}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1209,11 +963,17 @@ const EditProfile = () => {
                 name="residing_state"
                 value={formData.residing_state}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${
+                  errors.residing_state ? "border-red-500" : ""
+                }`}
                 placeholder="Current state"
                 maxLength="200"
               />
+              {errors.residing_state && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.residing_state}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1229,11 +989,17 @@ const EditProfile = () => {
                 name="residing_country"
                 value={formData.residing_country}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${
+                  errors.residing_country ? "border-red-500" : ""
+                }`}
                 placeholder="Current country"
                 maxLength="150"
               />
+              {errors.residing_country && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.residing_country}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1241,7 +1007,7 @@ const EditProfile = () => {
                 htmlFor="residing_status"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Residing Status
+                Residing Status *
               </label>
               <input
                 type="text"
@@ -1249,10 +1015,17 @@ const EditProfile = () => {
                 name="residing_status"
                 value={formData.residing_status}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.residing_status ? "border-red-500" : ""
+                }`}
                 placeholder="e.g. Citizen, Permanent Resident"
                 maxLength="100"
               />
+              {errors.residing_status && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.residing_status}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1268,11 +1041,17 @@ const EditProfile = () => {
                 name="birth_place"
                 value={formData.birth_place}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${
+                  errors.birth_place ? "border-red-500" : ""
+                }`}
                 placeholder="City of birth"
                 maxLength="150"
               />
+              {errors.birth_place && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.birth_place}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1280,7 +1059,7 @@ const EditProfile = () => {
                 htmlFor="native_place"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Native Place
+                Native Place *
               </label>
               <input
                 type="text"
@@ -1288,10 +1067,17 @@ const EditProfile = () => {
                 name="native_place"
                 value={formData.native_place}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.native_place ? "border-red-500" : ""
+                }`}
                 placeholder="Ancestral home"
                 maxLength="200"
               />
+              {errors.native_place && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.native_place}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -1313,11 +1099,17 @@ const EditProfile = () => {
                 name="mother_tongue"
                 value={formData.mother_tongue}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${
+                  errors.mother_tongue ? "border-red-500" : ""
+                }`}
                 placeholder="e.g. Hindi, Tamil"
                 maxLength="50"
               />
+              {errors.mother_tongue && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.mother_tongue}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1333,11 +1125,13 @@ const EditProfile = () => {
                 name="religion"
                 value={formData.religion}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${errors.religion ? "border-red-500" : ""}`}
                 placeholder="e.g. Hindu, Muslim"
                 maxLength="50"
               />
+              {errors.religion && (
+                <p className="mt-1 text-sm text-red-600">{errors.religion}</p>
+              )}
             </div>
 
             <div>
@@ -1353,11 +1147,13 @@ const EditProfile = () => {
                 name="caste"
                 value={formData.caste}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${errors.caste ? "border-red-500" : ""}`}
                 placeholder="Enter caste"
                 maxLength="100"
               />
+              {errors.caste && (
+                <p className="mt-1 text-sm text-red-600">{errors.caste}</p>
+              )}
             </div>
 
             <div>
@@ -1373,11 +1169,13 @@ const EditProfile = () => {
                 name="sub_caste"
                 value={formData.sub_caste}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${errors.sub_caste ? "border-red-500" : ""}`}
                 placeholder="Enter sub-caste"
                 maxLength="50"
               />
+              {errors.sub_caste && (
+                <p className="mt-1 text-sm text-red-600">{errors.sub_caste}</p>
+              )}
             </div>
 
             <div>
@@ -1393,11 +1191,13 @@ const EditProfile = () => {
                 name="raashi"
                 value={formData.raashi}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${errors.raashi ? "border-red-500" : ""}`}
                 placeholder="Enter raashi"
                 maxLength="50"
               />
+              {errors.raashi && (
+                <p className="mt-1 text-sm text-red-600">{errors.raashi}</p>
+              )}
             </div>
 
             <div>
@@ -1405,7 +1205,7 @@ const EditProfile = () => {
                 htmlFor="star"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Star/Nakshatra
+                Star/Nakshatra *
               </label>
               <input
                 type="text"
@@ -1413,10 +1213,13 @@ const EditProfile = () => {
                 name="star"
                 value={formData.star}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.star ? "border-red-500" : ""}`}
                 placeholder="Enter star/nakshatra"
                 maxLength="250"
               />
+              {errors.star && (
+                <p className="mt-1 text-sm text-red-600">{errors.star}</p>
+              )}
             </div>
 
             <div>
@@ -1424,14 +1227,14 @@ const EditProfile = () => {
                 htmlFor="manglik"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Manglik
+                Manglik *
               </label>
               <select
                 id="manglik"
                 name="manglik"
                 value={formData.manglik}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.manglik ? "border-red-500" : ""}`}
               >
                 {yesNoUnknownOptions.map((option) => (
                   <option key={option} value={option}>
@@ -1439,6 +1242,9 @@ const EditProfile = () => {
                   </option>
                 ))}
               </select>
+              {errors.manglik && (
+                <p className="mt-1 text-sm text-red-600">{errors.manglik}</p>
+              )}
             </div>
           </div>
         </div>
@@ -1462,11 +1268,13 @@ const EditProfile = () => {
                 name="education"
                 value={formData.education}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${errors.education ? "border-red-500" : ""}`}
                 placeholder="Highest education"
                 maxLength="250"
               />
+              {errors.education && (
+                <p className="mt-1 text-sm text-red-600">{errors.education}</p>
+              )}
             </div>
 
             <div>
@@ -1482,11 +1290,13 @@ const EditProfile = () => {
                 name="occupation"
                 value={formData.occupation}
                 onChange={handleChange}
-                required
-                className="input"
+                className={`input ${errors.occupation ? "border-red-500" : ""}`}
                 placeholder="Current occupation"
                 maxLength="250"
               />
+              {errors.occupation && (
+                <p className="mt-1 text-sm text-red-600">{errors.occupation}</p>
+              )}
             </div>
 
             <div>
@@ -1494,7 +1304,7 @@ const EditProfile = () => {
                 htmlFor="working_with"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Working With
+                Working With *
               </label>
               <input
                 type="text"
@@ -1502,10 +1312,17 @@ const EditProfile = () => {
                 name="working_with"
                 value={formData.working_with}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.working_with ? "border-red-500" : ""
+                }`}
                 placeholder="Company/organization name"
                 maxLength="150"
               />
+              {errors.working_with && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.working_with}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1513,7 +1330,7 @@ const EditProfile = () => {
                 htmlFor="professional_area"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Professional Area
+                Professional Area *
               </label>
               <input
                 type="text"
@@ -1521,10 +1338,17 @@ const EditProfile = () => {
                 name="professional_area"
                 value={formData.professional_area}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.professional_area ? "border-red-500" : ""
+                }`}
                 placeholder="Field of work"
                 maxLength="200"
               />
+              {errors.professional_area && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.professional_area}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1532,7 +1356,7 @@ const EditProfile = () => {
                 htmlFor="annual_income"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Annual Income (INR)
+                Annual Income (INR) *
               </label>
               <input
                 type="text"
@@ -1540,10 +1364,17 @@ const EditProfile = () => {
                 name="annual_income"
                 value={formData.annual_income}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.annual_income ? "border-red-500" : ""
+                }`}
                 placeholder="Annual income"
                 maxLength="11"
               />
+              {errors.annual_income && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.annual_income}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -1557,7 +1388,7 @@ const EditProfile = () => {
                 htmlFor="family_type"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Family Type
+                Family Type *
               </label>
               <input
                 type="text"
@@ -1565,10 +1396,17 @@ const EditProfile = () => {
                 name="family_type"
                 value={formData.family_type}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.family_type ? "border-red-500" : ""
+                }`}
                 placeholder="e.g. Nuclear, Joint"
                 maxLength="100"
               />
+              {errors.family_type && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.family_type}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1576,7 +1414,7 @@ const EditProfile = () => {
                 htmlFor="family_value"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Family Values
+                Family Values *
               </label>
               <input
                 type="text"
@@ -1584,10 +1422,17 @@ const EditProfile = () => {
                 name="family_value"
                 value={formData.family_value}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.family_value ? "border-red-500" : ""
+                }`}
                 placeholder="e.g. Traditional, Modern"
                 maxLength="100"
               />
+              {errors.family_value && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.family_value}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1595,7 +1440,7 @@ const EditProfile = () => {
                 htmlFor="family_status"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Family Status
+                Family Status *
               </label>
               <input
                 type="text"
@@ -1603,10 +1448,17 @@ const EditProfile = () => {
                 name="family_status"
                 value={formData.family_status}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.family_status ? "border-red-500" : ""
+                }`}
                 placeholder="e.g. Middle Class, Upper Middle"
                 maxLength="100"
               />
+              {errors.family_status && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.family_status}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1614,7 +1466,7 @@ const EditProfile = () => {
                 htmlFor="brothers"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Number of Brothers
+                Number of Brothers *
               </label>
               <input
                 type="text"
@@ -1622,10 +1474,13 @@ const EditProfile = () => {
                 name="brothers"
                 value={formData.brothers}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.brothers ? "border-red-500" : ""}`}
                 placeholder="Number of brothers"
                 maxLength="4"
               />
+              {errors.brothers && (
+                <p className="mt-1 text-sm text-red-600">{errors.brothers}</p>
+              )}
             </div>
 
             <div>
@@ -1633,7 +1488,7 @@ const EditProfile = () => {
                 htmlFor="sisters"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Number of Sisters
+                Number of Sisters *
               </label>
               <input
                 type="text"
@@ -1641,10 +1496,13 @@ const EditProfile = () => {
                 name="sisters"
                 value={formData.sisters}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.sisters ? "border-red-500" : ""}`}
                 placeholder="Number of sisters"
                 maxLength="4"
               />
+              {errors.sisters && (
+                <p className="mt-1 text-sm text-red-600">{errors.sisters}</p>
+              )}
             </div>
 
             <div>
@@ -1652,7 +1510,7 @@ const EditProfile = () => {
                 htmlFor="brother_marital_status"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Brothers' Marital Status
+                Brothers' Marital Status *
               </label>
               <input
                 type="text"
@@ -1660,10 +1518,17 @@ const EditProfile = () => {
                 name="brother_marital_status"
                 value={formData.brother_marital_status}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.brother_marital_status ? "border-red-500" : ""
+                }`}
                 placeholder="e.g. 1 Married, 1 Unmarried"
                 maxLength="20"
               />
+              {errors.brother_marital_status && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.brother_marital_status}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1671,7 +1536,7 @@ const EditProfile = () => {
                 htmlFor="sister_marital_status"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Sisters' Marital Status
+                Sisters' Marital Status *
               </label>
               <input
                 type="text"
@@ -1679,10 +1544,17 @@ const EditProfile = () => {
                 name="sister_marital_status"
                 value={formData.sister_marital_status}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.sister_marital_status ? "border-red-500" : ""
+                }`}
                 placeholder="e.g. 1 Married, 1 Unmarried"
                 maxLength="20"
               />
+              {errors.sister_marital_status && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.sister_marital_status}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1690,7 +1562,7 @@ const EditProfile = () => {
                 htmlFor="father_occupation"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Father's Occupation
+                Father's Occupation *
               </label>
               <input
                 type="text"
@@ -1698,10 +1570,17 @@ const EditProfile = () => {
                 name="father_occupation"
                 value={formData.father_occupation}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.father_occupation ? "border-red-500" : ""
+                }`}
                 placeholder="Father's occupation"
                 maxLength="250"
               />
+              {errors.father_occupation && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.father_occupation}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1709,7 +1588,7 @@ const EditProfile = () => {
                 htmlFor="mother_occupation"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Mother's Occupation
+                Mother's Occupation *
               </label>
               <input
                 type="text"
@@ -1717,10 +1596,17 @@ const EditProfile = () => {
                 name="mother_occupation"
                 value={formData.mother_occupation}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.mother_occupation ? "border-red-500" : ""
+                }`}
                 placeholder="Mother's occupation"
                 maxLength="250"
               />
+              {errors.mother_occupation && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.mother_occupation}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -1730,7 +1616,7 @@ const EditProfile = () => {
           <h2 className="text-xl font-semibold mb-4">Lifestyle & Interests</h2>
           <div className="mb-6">
             <label className="block text-sm font-medium text-neutral-700 mb-3">
-              Select Your Interests (Choose at least 3)
+              Select Your Interests (Choose at least 3) *
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {allHobbies.map((hob) => {
@@ -1771,6 +1657,9 @@ const EditProfile = () => {
                 );
               })}
             </div>
+            {errors.hobby && (
+              <p className="mt-1 text-sm text-red-600">{errors.hobby}</p>
+            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
@@ -1778,17 +1667,24 @@ const EditProfile = () => {
                 htmlFor="edu_career_about"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                About Education & Career
+                About Education & Career *
               </label>
               <textarea
                 id="edu_career_about"
                 name="edu_career_about"
                 value={formData.edu_career_about}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.edu_career_about ? "border-red-500" : ""
+                }`}
                 placeholder="Describe your education and career"
                 rows="3"
               />
+              {errors.edu_career_about && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.edu_career_about}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -1804,7 +1700,7 @@ const EditProfile = () => {
                 htmlFor="rotary_club"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Rotary Club Membership
+                Rotary Club Membership *
               </label>
               <input
                 type="text"
@@ -1812,10 +1708,17 @@ const EditProfile = () => {
                 name="rotary_club"
                 value={formData.rotary_club}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.rotary_club ? "border-red-500" : ""
+                }`}
                 placeholder="If applicable"
                 maxLength="112"
               />
+              {errors.rotary_club && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.rotary_club}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1823,7 +1726,7 @@ const EditProfile = () => {
                 htmlFor="district_no"
                 className="block text-sm font-medium text-neutral-700"
               >
-                District Number
+                District Number *
               </label>
               <input
                 type="text"
@@ -1831,10 +1734,17 @@ const EditProfile = () => {
                 name="district_no"
                 value={formData.district_no}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.district_no ? "border-red-500" : ""
+                }`}
                 placeholder="If applicable"
                 maxLength="112"
               />
+              {errors.district_no && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.district_no}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1842,7 +1752,7 @@ const EditProfile = () => {
                 htmlFor="fb_url"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Facebook Profile
+                Facebook Profile *
               </label>
               <input
                 type="url"
@@ -1850,9 +1760,12 @@ const EditProfile = () => {
                 name="fb_url"
                 value={formData.fb_url}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.fb_url ? "border-red-500" : ""}`}
                 placeholder="Facebook profile URL"
               />
+              {errors.fb_url && (
+                <p className="mt-1 text-sm text-red-600">{errors.fb_url}</p>
+              )}
             </div>
 
             <div>
@@ -1860,7 +1773,7 @@ const EditProfile = () => {
                 htmlFor="twitter_url"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Twitter Profile
+                Twitter Profile *
               </label>
               <input
                 type="url"
@@ -1868,9 +1781,16 @@ const EditProfile = () => {
                 name="twitter_url"
                 value={formData.twitter_url}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.twitter_url ? "border-red-500" : ""
+                }`}
                 placeholder="Twitter profile URL"
               />
+              {errors.twitter_url && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.twitter_url}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1878,7 +1798,7 @@ const EditProfile = () => {
                 htmlFor="gplus_url"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                Google+ Profile
+                Google+ Profile *
               </label>
               <input
                 type="url"
@@ -1886,9 +1806,12 @@ const EditProfile = () => {
                 name="gplus_url"
                 value={formData.gplus_url}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.gplus_url ? "border-red-500" : ""}`}
                 placeholder="Google+ profile URL"
               />
+              {errors.gplus_url && (
+                <p className="mt-1 text-sm text-red-600">{errors.gplus_url}</p>
+              )}
             </div>
 
             <div>
@@ -1896,7 +1819,7 @@ const EditProfile = () => {
                 htmlFor="linkedin_url"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                LinkedIn Profile
+                LinkedIn Profile *
               </label>
               <input
                 type="url"
@@ -1904,9 +1827,16 @@ const EditProfile = () => {
                 name="linkedin_url"
                 value={formData.linkedin_url}
                 onChange={handleChange}
-                className="input"
+                className={`input ${
+                  errors.linkedin_url ? "border-red-500" : ""
+                }`}
                 placeholder="LinkedIn profile URL"
               />
+              {errors.linkedin_url && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.linkedin_url}
+                </p>
+              )}
             </div>
 
             <div className="md:col-span-2">
@@ -1914,17 +1844,20 @@ const EditProfile = () => {
                 htmlFor="about"
                 className="block text-sm font-medium text-neutral-700 mb-1"
               >
-                About Yourself
+                About Yourself *
               </label>
               <textarea
                 id="about"
                 name="about"
                 value={formData.about}
                 onChange={handleChange}
-                className="input"
+                className={`input ${errors.about ? "border-red-500" : ""}`}
                 placeholder="Tell us about yourself"
                 rows="4"
               />
+              {errors.about && (
+                <p className="mt-1 text-sm text-red-600">{errors.about}</p>
+              )}
             </div>
           </div>
         </div>

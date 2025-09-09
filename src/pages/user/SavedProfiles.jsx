@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import {  getAllShortlistedProfilesByMe } from "../../api/shortlist.api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const SavedProfiles = () => {
   const {user} = useAuth()
@@ -52,9 +53,9 @@ const SavedProfiles = () => {
             <p className="text-neutral-600 mb-4">
               You haven't saved any profiles yet.
             </p>
-            <a href="/browse" className="btn-primary">
+            <Link to="/browse" className="btn-primary">
               Browse Profiles
-            </a>
+            </Link>
           </div>
         )}
       </motion.div>

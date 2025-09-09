@@ -164,15 +164,12 @@ const Register = () => {
       >
         {/* Left Column */}
         <div className="space-y-4">
-          {/* Username */}
-
-          {/* Name */}
           <div>
             <label
               htmlFor="name"
               className="block text-sm font-medium text-neutral-700 mb-1"
             >
-              Full Name *
+              Name
             </label>
             <input
               type="text"
@@ -194,7 +191,7 @@ const Register = () => {
               htmlFor="email"
               className="block text-sm font-medium text-neutral-700 mb-1"
             >
-              Email Address *
+              Email*
             </label>
             <input
               type="email"
@@ -242,7 +239,7 @@ const Register = () => {
               htmlFor="phone"
               className="block text-sm font-medium text-neutral-700 mb-1"
             >
-              Phone Number *
+              Phone*
             </label>
             <input
               type="text"
@@ -257,8 +254,8 @@ const Register = () => {
               <p className="text-red-500 text-sm">{formErrors.phone}</p>
             )}
           </div>
-          {/* Password */}
 
+          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -326,7 +323,9 @@ const Register = () => {
 
           {/* Submit Button */}
         </div>
+
       </motion.div>
+
       <div className="pt-6">
         <button
           type="button"
@@ -338,7 +337,7 @@ const Register = () => {
       </div>
 
       <p className="text-center text-neutral-600 mt-8">
-        Already have an account?{" "}
+        Already have an account?
         <Link
           to="/auth/login"
           className="text-primary-600 hover:text-primary-700 font-medium"
@@ -346,6 +345,7 @@ const Register = () => {
           Sign In
         </Link>
       </p>
+
     </motion.div>
   );
 };

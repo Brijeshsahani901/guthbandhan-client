@@ -133,6 +133,7 @@ import { useMutation } from "@tanstack/react-query";
 import { sendOtp, verifyOtp, resetPassword } from "../../api/auth.api";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: New Password
@@ -140,6 +141,7 @@ const ForgotPassword = () => {
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
 
   const sendOtpMutation = useMutation({
     mutationFn: () => sendOtp(email),
@@ -165,14 +167,22 @@ const ForgotPassword = () => {
 
   const resetPasswordMutation = useMutation({
     mutationFn: () => resetPassword({ email, otp, newPassword }),
-    onSuccess: () => {
-      toast.success("Password reset successfully!");
-      setStep(1);
-      setEmail("");
-      setOtp("");
-      setNewPassword("");
-      setConfirmPassword("");
-    },
+   onSuccess: () => {
+  toast.success("Password reset successfully!");
+
+  // Reset state
+  setStep(1);
+  setEmail("");
+  setOtp("");
+  setNewPassword("");
+  setConfirmPassword("");
+
+  // Redirect after short delay (optional)
+  setTimeout(() => {
+    navigate("/login");
+  }, 1000); // Delay in ms (optional, so user sees toast)
+},
+
     onError: (err) => {
       toast.error(err?.message || "Failed to reset password.");
     },
