@@ -166,7 +166,7 @@ export default function Browse() {
       if (user?.profile_id) {
         try {
           const profile = await getProfile(user?.profile_id);
-          const oppositeSex = profile?.sex === "M" ? "F" : "M";
+          const oppositeSex = profile?.profile?.sex === "M" ? "F" : "M";
           setFilters((prev) => ({
             ...prev,
             sex: oppositeSex,
