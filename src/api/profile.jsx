@@ -27,15 +27,13 @@ export const fetchAcceptedProfiles = async () => {
   }
 };
 
-export const getProfile = async (id) => {
-  try {
-    const response = await axiosInstance.get(`/profile/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Failed to fetch profile:", error);
-    throw error; 
-  }
+export const getProfile = async (profileId) => {
+  console.log("Calling getProfile API with id:", profileId);
+
+  const response = await axiosInstance.get(`/profile/${profileId}`);
+  return response.data;
 };
+
 
 export const getAllProfile = async ({ page = 1, limit = 10 } = {}) => {
   try {
@@ -103,4 +101,32 @@ export const deleteProfile = async (id) => {
     console.error("Failed to fetch profile:", error);
     throw error; 
   }
+};
+
+
+// Add these functions to your profile API file
+export const updateProfileFromCV = async (profileId, formData) => {
+  const response = await axios.post(
+    `${API_URL}/profiles/${profileId}/update-from-cv`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const generateProfilePDF = async (profileId) => {
+  const response = await axios.get(
+    `${API_URL}/profiles/${profileId}/generate-pdf`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    }
+  );
+  return response.data;
 };

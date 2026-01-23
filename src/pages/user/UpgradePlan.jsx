@@ -10,8 +10,9 @@ const UpgradePlan = () => {
     {
       id: "premium",
       name: "Premium",
-      monthlyPrice: 19.99,
-      yearlyPrice: 199.99,
+      monthlyPrice: 6000, // ₹6,000
+      yearlyPrice: 6000 * 12 * 0.84, // 16% OFF → ₹60,480
+      currency: "INR",
       features: [
         "Unlimited messaging",
         "See who viewed your profile",
@@ -23,10 +24,11 @@ const UpgradePlan = () => {
       ],
     },
     {
-      id: "vip",
-      name: "VIP",
-      monthlyPrice: 39.99,
-      yearlyPrice: 399.99,
+      id: "elite",
+      name: "Elite",
+      monthlyPrice: 10000, // ₹10,000
+      yearlyPrice: 10000 * 12 * 0.84, // 16% OFF → ₹1,00,800
+      currency: "INR",
       features: [
         "All Premium features",
         "Personal matchmaking consultant",
@@ -46,10 +48,15 @@ const UpgradePlan = () => {
       toast.error("Please select a plan");
       return;
     }
-
-    // In a real app, this would integrate with a payment processor
     toast.success("Redirecting to payment...");
   };
+
+  const formatINR = (value) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(value);
 
   return (
     <div className="container-custom py-8 mt-20">
@@ -74,6 +81,7 @@ const UpgradePlan = () => {
               >
                 Monthly
               </button>
+
               <button
                 onClick={() => setBillingCycle("yearly")}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -83,7 +91,7 @@ const UpgradePlan = () => {
                 }`}
               >
                 Yearly{" "}
-                <span className="text-accent-500 font-bold">Save 16%</span>
+                <span className="text-accent-500 font-bold">(Save 16%)</span>
               </button>
             </div>
           </div>
@@ -101,14 +109,14 @@ const UpgradePlan = () => {
               >
                 <div className="p-6">
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+
                   <div className="mb-6">
                     <span className="text-4xl font-bold">
-                      $
                       {billingCycle === "monthly"
-                        ? plan.monthlyPrice.toFixed(2)
-                        : plan.yearlyPrice.toFixed(2)}
+                        ? formatINR(plan.monthlyPrice)
+                        : formatINR(plan.yearlyPrice)}
                     </span>
-                    <span className="text-neutral-500">
+                    <span className="text-neutral-500 ml-1">
                       /{billingCycle === "monthly" ? "month" : "year"}
                     </span>
                   </div>
@@ -162,7 +170,6 @@ const UpgradePlan = () => {
             </button>
           </div>
 
-          {/* Money Back Guarantee */}
           <div className="mt-12 text-center">
             <p className="text-neutral-600">
               7-day money-back guarantee. No questions asked.

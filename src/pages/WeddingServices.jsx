@@ -201,7 +201,6 @@
 //   );
 // }
 
-
 // WeddingServices.js
 import React from "react";
 import { motion, useAnimation, useInView } from "framer-motion";
@@ -255,7 +254,8 @@ export default function WeddingServices() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.6 }}
         >
-          From majestic palaces to intimate garden affairs, Guthbandhan is your trusted wedding planning partner across India.
+          From majestic palaces to intimate garden affairs, Guthbandhan is your
+          trusted wedding planning partner across India.
         </motion.p>
         <motion.a
           href="#contact"
@@ -311,14 +311,25 @@ export default function WeddingServices() {
           transition={{ duration: 0.8 }}
         />
         <ul className="mt-6 space-y-2 text-center text-gray-700">
-          <li><strong>Alka & Kapil, Faridabad:</strong> A pastel floral fairytale</li>
-          <li><strong>Meera & Aarav, Jaipur:</strong> A regal ceremony at Rambagh Palace</li>
-          <li><strong>Priya & Rohit, Goa:</strong> A vibrant mehendi on the sands</li>
+          <li>
+            <strong>Alka & Kapil, Faridabad:</strong> A pastel floral fairytale
+          </li>
+          <li>
+            <strong>Meera & Aarav, Jaipur:</strong> A regal ceremony at Rambagh
+            Palace
+          </li>
+          <li>
+            <strong>Priya & Rohit, Goa:</strong> A vibrant mehendi on the sands
+          </li>
         </ul>
       </AnimatedSection>
 
       {/* Why Choose */}
-      <AnimatedSection id="why" title="💡 Why Choose Guthbandhan?" bgColor="bg-pink-50">
+      <AnimatedSection
+        id="why"
+        title="💡 Why Choose Guthbandhan?"
+        bgColor="bg-pink-50"
+      >
         <motion.ul
           className="list-disc list-inside max-w-xl mx-auto space-y-3 text-gray-700"
           initial={{ opacity: 0 }}
@@ -341,12 +352,19 @@ export default function WeddingServices() {
           transition={{ delay: 0.2 }}
         >
           <em>Guthbandhan</em> (meaning “the knot”) is a premier Indian wedding
-          planning & experience design company. We blend cherished family traditions with modern elegance to curate deeply personal, joyous celebrations.
+          planning & experience design company. We blend cherished family
+          traditions with modern elegance to curate deeply personal, joyous
+          celebrations.
         </motion.p>
       </AnimatedSection>
 
       {/* Contact */}
-      <AnimatedSection id="contact" title="📞 Contact Us" bgColor="bg-pink-50" className="text-center">
+      <AnimatedSection
+        id="contact"
+        title="📞 Contact Us"
+        bgColor="bg-pink-50"
+        className="text-center"
+      >
         <motion.p
           className="text-gray-600 text-center"
           initial={{ opacity: 0 }}
@@ -355,20 +373,74 @@ export default function WeddingServices() {
         >
           Schedule Your Free Consultation:
         </motion.p>
+
         <ul className="mt-4 space-y-2 text-center">
-          <li>WhatsApp: +91 XXXXX XXXXX</li>
-          <li>Email: hello@guthbandhan.com</li>
-          <li>Instagram: @guthbandhan.weddings</li>
-            <motion.a
-          href="#contact"
-          className="inline-block items-center mt-6 px-6 py-3 bg-pink-600 text-white rounded-full shadow hover:bg-pink-700 transition font-semibold"
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Start Planning Your Wedding →
-        </motion.a>
+          <li>
+            <strong>Arnav Arvind</strong> -{" "}
+            <a
+              href="tel:+919910550022"
+              className="text-pink-600 hover:underline"
+            >
+              +91 99105 50022
+            </a>{" "}
+            •{" "}
+            <a
+              href="https://wa.me/919910550022"
+              target="_blank"
+              rel="noreferrer"
+              className="text-pink-600 hover:underline"
+            >
+              WhatsApp
+            </a>
+          </li>
+
+          <li>
+            <strong>Rahul Kapoor</strong> -{" "}
+            <a
+              href="tel:+917838319148"
+              className="text-pink-600 hover:underline"
+            >
+              +91 78383 19148
+            </a>{" "}
+            •{" "}
+            <a
+              href="https://wa.me/917838319148"
+              target="_blank"
+              rel="noreferrer"
+              className="text-pink-600 hover:underline"
+            >
+              WhatsApp
+            </a>
+          </li>
+
+          <li>
+            <strong>Harshmeet Kapoor</strong> -{" "}
+            <a
+              href="tel:+919810181635"
+              className="text-pink-600 hover:underline"
+            >
+              +91 98101 81635
+            </a>{" "}
+            •{" "}
+            <a
+              href="https://wa.me/919810181635"
+              target="_blank"
+              rel="noreferrer"
+              className="text-pink-600 hover:underline"
+            >
+              WhatsApp
+            </a>
+          </li>
+
+          <motion.a
+            href="#contact"
+            className="inline-block items-center mt-6 px-6 py-3 bg-pink-600 text-white rounded-full shadow hover:bg-pink-700 transition font-semibold"
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Start Planning Your Wedding →
+          </motion.a>
         </ul>
-      
       </AnimatedSection>
     </div>
   );
@@ -399,7 +471,9 @@ function AnimatedSection({ id, title, children, bgColor = "" }) {
         visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
       }}
     >
-      <h2 className="text-3xl font-bold text-center text-pink-700 mb-8">{title}</h2>
+      <h2 className="text-3xl font-bold text-center text-pink-700 mb-8">
+        {title}
+      </h2>
       {children}
     </motion.section>
   );
@@ -476,9 +550,6 @@ const services = [
   },
   {
     title: "📸 Photography & Films",
-    items: [
-      "Pre-wedding shoots & drone coverage",
-      "Cinematic wedding films",
-    ],
+    items: ["Pre-wedding shoots & drone coverage", "Cinematic wedding films"],
   },
 ];

@@ -191,7 +191,6 @@ import { toast } from "react-hot-toast";
 import { register } from "../../api/auth.api";
 import { deleteProfile } from "../../api/profile";
 
-
 const Users = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -337,49 +336,44 @@ const Users = () => {
       await queryClient.invalidateQueries(["profiles"]);
     },
 
-onError: (error) => {
-  if (
-    error !== null &&
-    typeof error === "object" &&
-    !Array.isArray(error) &&
-    Array.isArray(error.errors)
-  ) {
-    // Agar error.errors ek array hai to usko map karo
-    const messages = error.errors.map((err) => `${err.path}: ${err.msg}`);
-    setFormError(messages);
-  } else {
-    // Agar error.errors nahi mila to generic message dikhado
-    setFormError([error?.message || "Failed to create user/profile"]);
-  }
+    onError: (error) => {
+      if (
+        error !== null &&
+        typeof error === "object" &&
+        !Array.isArray(error) &&
+        Array.isArray(error.errors)
+      ) {
+        // Agar error.errors ek array hai to usko map karo
+        const messages = error.errors.map((err) => `${err.path}: ${err.msg}`);
+        setFormError(messages);
+      } else {
+        // Agar error.errors nahi mila to generic message dikhado
+        setFormError([error?.message || "Failed to create user/profile"]);
+      }
 
-  console.error("API Error:", error);
-},
-
-
+      console.error("API Error:", error);
+    },
   });
 
   const deleteMutation = useMutation({
-  mutationFn: async (profileId) => {
-    return await deleteProfile(profileId);
-  },
-  onSuccess: async () => {
-    toast.success("User profile deleted successfully!");
-    await queryClient.invalidateQueries(["profiles"]);
-  },
-  onError: (error) => {
-    toast.error(error?.response?.data?.message || "Failed to delete profile");
-    console.error("Delete error:", error);
-  },
-});
-
-
+    mutationFn: async (profileId) => {
+      return await deleteProfile(profileId);
+    },
+    onSuccess: async () => {
+      toast.success("User profile deleted successfully!");
+      await queryClient.invalidateQueries(["profiles"]);
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message || "Failed to delete profile");
+      console.error("Delete error:", error);
+    },
+  });
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
     setPage(1);
   };
-
 
   const allHobbies = [
     "Travel",
@@ -493,32 +487,37 @@ onError: (error) => {
                       <td className="px-6 py-4">{p.residing_country || "-"}</td>
                       <td className="px-6 py-4">{p.marital_status || "-"}</td>
                       <td className="px-6 py-4">{formatDate(p.createdAt)}</td>
-                     <td className="px-6 py-4 flex justify-center gap-4">
-  {/* Edit Button */}
-  <button
-    onClick={() =>
-      navigate(`/user/edit-profile?profile_id=${p.profile_id}`)
-    }
-    className="text-blue-600 hover:text-blue-800 transition"
-    title="Edit Profile"
-  >
-    <FaEdit />
-  </button>
+                      <td className="px-6 py-4 flex justify-center gap-4">
+                        {/* Edit Button */}
+                        <button
+                          onClick={() =>
+                            navigate(
+                              `/user/edit-profile?profile_id=${p.profile_id}`
+                            )
+                          }
+                          className="text-blue-600 hover:text-blue-800 transition"
+                          title="Edit Profile"
+                        >
+                          <FaEdit />
+                        </button>
 
-  {/* Delete Button */}
-  <button
-    onClick={() => {
-      if (window.confirm("Are you sure you want to delete this user?")) {
-        deleteMutation.mutate(p.profile_id); // or p._id depending on your API
-      }
-    }}
-    className="text-red-600 hover:text-red-800 transition"
-    title="Delete Profile"
-  >
-    🗑️
-  </button>
-</td>
-
+                        {/* Delete Button */}
+                        <button
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                "Are you sure you want to delete this user?"
+                              )
+                            ) {
+                              deleteMutation.mutate(p._id); // or p._id depending on your API
+                            }
+                          }}
+                          className="text-red-600 hover:text-red-800 transition"
+                          title="Delete Profile"
+                        >
+                          🗑️
+                        </button>
+                      </td>
                     </motion.tr>
                   ))}
                 </AnimatePresence>
@@ -720,14 +719,13 @@ onError: (error) => {
               </div>
 
               {/* Error Messages (if any) */}
-           {formError.length > 0 && (
-  <div className="text-red-600 text-sm font-medium space-y-1 mb-2 text-left">
-    {formError.map((err, idx) => (
-      <div key={idx}>❌ {err}</div>
-    ))}
-  </div>
-)}
-
+              {formError.length > 0 && (
+                <div className="text-red-600 text-sm font-medium space-y-1 mb-2 text-left">
+                  {formError.map((err, idx) => (
+                    <div key={idx}>❌ {err}</div>
+                  ))}
+                </div>
+              )}
 
               {/* Buttons */}
               <div className="flex justify-end gap-4 pt-4">

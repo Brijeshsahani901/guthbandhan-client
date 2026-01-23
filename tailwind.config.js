@@ -75,10 +75,15 @@ export default {
           950: '#020617',
         }
       },
+      // fontFamily: {
+      //   serif: ['Playfair Display', 'Georgia', 'serif'],
+      //   sans: ['Inter', 'system-ui', 'sans-serif'],
+      // },
       fontFamily: {
-        serif: ['Playfair Display', 'Georgia', 'serif'],
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-      },
+  sans: ["Poppins", "system-ui", "sans-serif"],
+  serif: ["Poppins", "system-ui", "sans-serif"],
+},
+
       spacing: {
         '8xl': '96rem',
         '9xl': '128rem',
