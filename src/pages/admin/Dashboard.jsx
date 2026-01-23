@@ -89,8 +89,8 @@ const Dashboard = () => {
             <div key={index} className="flex items-center justify-between">
               <div className="flex items-center">
                 <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-600 font-medium">
-                  {p.first_name.charAt(0)}
-                  {p.last_name.charAt(0)}
+                  {p.first_name}
+                  {p.last_name}
                 </div>
                 <div className="ml-3">
                   <p className="font-medium">{p.first_name} {p.last_name}</p>

@@ -2526,65 +2526,145 @@ const handleLocationChange = (field, value) => {
         )}
 
         {/* CV Upload Section */}
-        <div className="bg-white p-6 rounded-xl shadow-sm mb-6">
-          <h2 className="text-xl font-semibold mb-4">CV / Resume Upload</h2>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Upload CV (PDF) to automatically update profile
-            </label>
-            <div className="flex items-center gap-4">
-              <label className="cursor-pointer bg-primary-50 border-2 border-primary-200 border-dashed rounded-lg p-4 text-center hover:bg-primary-100 transition-colors">
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={(e) => handleFileUpload(e, "cv_pdf")}
-                  className="hidden"
-                />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 mx-auto text-primary-600 mb-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                <span className="text-sm text-primary-700">Upload CV PDF</span>
-              </label>
-              {files.cv_pdf && (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-neutral-600">
-                    {files.cv_pdf.name}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removePDF("cv_pdf")}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    Remove
-                  </button>
-                </div>
-              )}
+    {/* CV Upload Section */}
+<div className="bg-white p-6 rounded-xl shadow-sm mb-6">
+  <h2 className="text-xl font-semibold mb-4">CV / Resume Upload</h2>
+  
+  {/* Display existing CV if available */}
+  {formData.cv_pdf && typeof formData.cv_pdf === 'string' && (
+    <div className="mb-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-16 h-20 bg-purple-100 rounded-lg flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-600" 
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="absolute -bottom-1 -right-1 bg-purple-500 text-white 
+                text-xs rounded-full w-5 h-5 flex items-center justify-center">CV</span>
             </div>
           </div>
+          <div>
+            <p className="font-medium text-neutral-700">CV Uploaded</p>
+            <p className="text-sm text-neutral-500">Click to view/download</p>
+          </div>
+        </div>
+        
+        <div className="flex gap-2">
+          <a
+            href={`${baseurl}${formData.cv_pdf.replace(/\\/g, "/")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm 
+              hover:bg-blue-200 transition-colors"
+          >
+            <div className="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" 
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              View
+            </div>
+          </a>
+          
           <button
             type="button"
             onClick={handleCVUploadAndParse}
-            className="btn-secondary"
-            disabled={!files.cv_pdf}
+            className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm 
+              hover:bg-green-200 transition-colors"
           >
-            Update Profile from CV
+            <div className="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" 
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Parse
+            </div>
           </button>
-          <p className="text-sm text-neutral-500 mt-2">
-            Upload your CV to automatically fill profile details (name, email,
-            education, etc.)
-          </p>
         </div>
+      </div>
+    </div>
+  )}
+  
+  {/* Rest of the CV upload section remains same */}
+  <div className="mb-4">
+    <label className="block text-sm font-medium text-neutral-700 mb-2">
+      Upload CV (PDF)
+    </label>
+    
+    {files.cv_pdf && (
+      <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-16 h-20 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" 
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="absolute -bottom-1 -right-1 bg-blue-500 text-white text-xs 
+                  rounded-full w-5 h-5 flex items-center justify-center">New</span>
+              </div>
+            </div>
+            <div>
+              <p className="font-medium text-neutral-700">{files.cv_pdf.name}</p>
+              <p className="text-sm text-neutral-500">
+                {(files.cv_pdf.size / 1024 / 1024).toFixed(2)} MB
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleCVUploadAndParse}
+              className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm 
+                hover:bg-green-200 transition-colors"
+            >
+              Parse CV
+            </button>
+            <button
+              type="button"
+              onClick={() => removePDF("cv_pdf")}
+              className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm 
+                hover:bg-red-200 transition-colors"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    
+    {!files.cv_pdf && !formData.cv_pdf && (
+      <div className="flex items-center gap-4">
+        <label className="cursor-pointer bg-primary-50 border-2 border-primary-200 
+          border-dashed rounded-lg p-4 text-center hover:bg-primary-100 transition-colors">
+          <input
+            type="file"
+            accept=".pdf"
+            onChange={(e) => handleFileUpload(e, "cv_pdf")}
+            className="hidden"
+          />
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto 
+            text-primary-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span className="text-sm text-primary-700">Upload CV PDF</span>
+        </label>
+      </div>
+    )}
+  </div>
+  
+</div>
 
         {/* Photos Section */}
         <div className="bg-white p-6 rounded-xl shadow-sm mb-6">
@@ -3686,58 +3766,150 @@ const handleLocationChange = (field, value) => {
         </div>
 
         {/* Janam Kundli Upload */}
-        <div className="bg-white p-6 rounded-xl shadow-sm mb-6">
-          <h2 className="text-xl font-semibold mb-4">Background Documents</h2>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Upload Janam Kundli (PDF)
-            </label>
-            <div className="flex items-center gap-4">
-              <label className="cursor-pointer bg-blue-50 border-2 border-blue-200 border-dashed rounded-lg p-4 text-center hover:bg-blue-100 transition-colors">
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={(e) => handleFileUpload(e, "janam_kundli_pdf")}
-                  className="hidden"
-                />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 mx-auto text-blue-600 mb-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
+    {/* Janam Kundli Upload & View Section */}
+<div className="bg-white p-6 rounded-xl shadow-sm mb-6">
+  <h2 className="text-xl font-semibold mb-4">Background Documents</h2>
+  
+  <div className="mb-4">
+    <label className="block text-sm font-medium text-neutral-700 mb-2">
+      Janam Kundli (Horoscope)
+    </label>
+    
+    {/* Display existing Janam Kundli if available */}
+    {formData.janam_kundli_pdf && typeof formData.janam_kundli_pdf === 'string' && (
+      <div className="mb-4 p-4 bg-green-50 rounded-lg border border-green-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-16 h-20 bg-red-100 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600" 
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <span className="text-sm text-blue-700">
-                  Upload Janam Kundli
-                </span>
-              </label>
-              {files.janam_kundli_pdf && (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-neutral-600">
-                    {files.janam_kundli_pdf.name}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removePDF("janam_kundli_pdf")}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    Remove
-                  </button>
-                </div>
-              )}
+                <span className="absolute -bottom-1 -right-1 bg-red-500 text-white text-xs 
+                  rounded-full w-5 h-5 flex items-center justify-center">PDF</span>
+              </div>
             </div>
-            <p className="text-sm text-neutral-500 mt-2">
-              Upload your Janam Kundli PDF for astrological matching
-            </p>
+            <div>
+              <p className="font-medium text-neutral-700">Janam Kundli Uploaded</p>
+              <p className="text-sm text-neutral-500">Click to view/download</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <a
+              href={`${baseurl}${formData.janam_kundli_pdf.replace(/\\/g, "/")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm 
+                hover:bg-blue-200 transition-colors"
+            >
+              <div className="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" 
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                View
+              </div>
+            </a>
+            
+            <button
+              type="button"
+              onClick={() => {
+                if (confirm("Are you sure you want to remove this Janam Kundli?")) {
+                  setFormData(prev => ({
+                    ...prev,
+                    janam_kundli_pdf: null
+                  }));
+                  toast.success("Janam Kundli removed successfully");
+                }
+              }}
+              className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm 
+                hover:bg-red-200 transition-colors"
+            >
+              <div className="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" 
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Remove
+              </div>
+            </button>
           </div>
         </div>
+      </div>
+    )}
+    
+    {/* Display newly uploaded file */}
+    {files.janam_kundli_pdf && (
+      <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-16 h-20 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" 
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="absolute -bottom-1 -right-1 bg-blue-500 text-white text-xs 
+                  rounded-full w-5 h-5 flex items-center justify-center">New</span>
+              </div>
+            </div>
+            <div>
+              <p className="font-medium text-neutral-700">{files.janam_kundli_pdf.name}</p>
+              <p className="text-sm text-neutral-500">
+                {(files.janam_kundli_pdf.size / 1024 / 1024).toFixed(2)} MB • Ready to upload
+              </p>
+            </div>
+          </div>
+          
+          <button
+            type="button"
+            onClick={() => removePDF("janam_kundli_pdf")}
+            className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm 
+              hover:bg-red-200 transition-colors"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    )}
+    
+    {/* Upload button (only show if no file is selected) */}
+    {!files.janam_kundli_pdf && !formData.janam_kundli_pdf && (
+      <div className="flex items-center gap-4">
+        <label className="cursor-pointer bg-blue-50 border-2 border-blue-200 
+          border-dashed rounded-lg p-6 text-center hover:bg-blue-100 transition-colors 
+          flex-1 max-w-xs">
+          <input
+            type="file"
+            accept=".pdf"
+            onChange={(e) => handleFileUpload(e, "janam_kundli_pdf")}
+            className="hidden"
+          />
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto 
+            text-blue-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span className="text-sm text-blue-700 font-medium">Upload Janam Kundli PDF</span>
+          <p className="text-xs text-neutral-500 mt-1">Max 10MB • PDF only</p>
+        </label>
+      </div>
+    )}
+    
+    <p className="text-sm text-neutral-500 mt-3">
+      Upload your Janam Kundli PDF for astrological matching. You can view, 
+      download or replace it anytime.
+    </p>
+  </div>
+</div>
 
         {/* Social Media */}
         <div className="bg-white p-6 rounded-xl shadow-sm mb-6">
