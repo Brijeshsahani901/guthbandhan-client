@@ -630,12 +630,12 @@ const Interests = () => {
           </div>
 
           {/* Header */}
-          <div className="text-center mb-12">
+          <div className="text-center my-6">
             <motion.h1
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-5xl font-bold text-gray-900 mb-4"
+              className="text-4xl font-bold text-gray-900 mb-4"
             >
               Interest{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-primary-600">
@@ -646,7 +646,7 @@ const Interests = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-xl text-gray-600 max-w-2xl mx-auto"
+              className="text-lg text-gray-600 max-w-2xl mx-auto"
             >
               Manage your connections, respond to interests, and build
               meaningful relationships

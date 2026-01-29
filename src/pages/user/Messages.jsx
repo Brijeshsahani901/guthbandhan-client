@@ -411,6 +411,18 @@ const Messages = () => {
     refetchInterval: 30000,
   });
 
+  const isMembershipValid = (profile) => {
+    if (!profile) return false;
+
+    if (profile.paid_member !== "Y") return false;
+
+    if (!profile.membership_expired_on) return false;
+
+    const expiryDate = new Date(profile.membership_expired_on);
+    return expiryDate > new Date();
+  };
+  const canSendMessage = isMembershipValid(user?.profile);
+
   // Get messages
   const {
     data: fetchedMessages = [],
@@ -423,72 +435,99 @@ const Messages = () => {
   });
 
   // Mark messages as read when conversation is selected
+const lastReadRef = useRef(null);
+
+useEffect(() => {
+  if (
+    selectedConversation?.id &&
+    lastReadRef.current !== selectedConversation.id
+  ) {
+    lastReadRef.current = selectedConversation.id;
+    markMessagesAsRead(selectedConversation.id);
+  }
+}, [selectedConversation?.id]);
+
+
   useEffect(() => {
-    if (selectedConversation?.id) {
-      markMessagesAsRead(selectedConversation.id);
-    }
-  }, [selectedConversation?.id]);
+  if (!user?.profile_id) return;
+
+  initSocket(user.profile_id);
+
+  return () => {
+    // optional: socket cleanup agar function hai
+  };
+}, [user?.profile_id]);
+
 
   // Socket handlers
-  useEffect(() => {
-    if (!user?.profile_id) return;
+useEffect(() => {
+  if (!selectedConversation?.id) return;
 
-    initSocket(user.profile_id);
+  const handleNewMessage = (newMessage) => {
+    if (
+      newMessage.sender_profile_id === selectedConversation.id ||
+      newMessage.receiver_profile_id === selectedConversation.id
+    ) {
+      setMessages((prev) => [...prev, newMessage]);
 
-    const handleNewMessage = (newMessage) => {
-      if (
-        newMessage.sender_profile_id === selectedConversation?.id ||
-        newMessage.receiver_profile_id === selectedConversation?.id
-      ) {
-        setMessages((prev) => [...prev, newMessage]);
-        
-        // Mark as read if it's the current conversation
-        if (newMessage.sender_profile_id === selectedConversation?.id) {
-          setTimeout(() => {
-            markMessagesAsRead(selectedConversation.id);
-          }, 100);
-        }
+      if (newMessage.sender_profile_id === selectedConversation.id) {
+        markMessagesAsRead(selectedConversation.id);
       }
-      refetchConnections();
-    };
+    }
+    refetchConnections();
+  };
 
-    const handleTypingIndicator = (data) => {
-      if (data.userId === selectedConversation?.id) {
-        setIsTyping(data.isTyping);
-      }
-    };
+  const handleTypingIndicator = (data) => {
+    if (data.userId === selectedConversation.id) {
+      setIsTyping(data.isTyping);
+    }
+  };
 
-    const handleMessageUpdated = (updatedMessage) => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg._id === updatedMessage._id ? updatedMessage : msg
-        )
-      );
-    };
+  const handleMessageUpdated = (updatedMessage) => {
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg._id === updatedMessage._id ? updatedMessage : msg
+      )
+    );
+  };
 
-    const handleMessageDeleted = (data) => {
-      setMessages((prev) => prev.filter((msg) => msg._id !== data.messageId));
-    };
+  const handleMessageDeleted = (data) => {
+    setMessages((prev) =>
+      prev.filter((msg) => msg._id !== data.messageId)
+    );
+  };
 
-    onSocketEvent("receive_message", handleNewMessage);
-    onSocketEvent("user_typing", handleTypingIndicator);
-    onSocketEvent("message_updated", handleMessageUpdated);
-    onSocketEvent("message_deleted", handleMessageDeleted);
+  onSocketEvent("receive_message", handleNewMessage);
+  onSocketEvent("user_typing", handleTypingIndicator);
+  onSocketEvent("message_updated", handleMessageUpdated);
+  onSocketEvent("message_deleted", handleMessageDeleted);
 
-    return () => {
-      offSocketEvent("receive_message", handleNewMessage);
-      offSocketEvent("user_typing", handleTypingIndicator);
-      offSocketEvent("message_updated", handleMessageUpdated);
-      offSocketEvent("message_deleted", handleMessageDeleted);
-    };
-  }, [user?.profile_id, selectedConversation?.id]);
+  return () => {
+    offSocketEvent("receive_message", handleNewMessage);
+    offSocketEvent("user_typing", handleTypingIndicator);
+    offSocketEvent("message_updated", handleMessageUpdated);
+    offSocketEvent("message_deleted", handleMessageDeleted);
+  };
+}, [selectedConversation?.id]);
 
   // Update messages when fetched
-  useEffect(() => {
-    if (!Array.isArray(fetchedMessages)) return;
+useEffect(() => {
+  if (!Array.isArray(fetchedMessages)) return;
 
-    setMessages(fetchedMessages);
-  }, [fetchedMessages]);
+  setMessages((prev) => {
+    // same length + same last message → no update
+    if (
+      prev.length === fetchedMessages.length &&
+      prev[prev.length - 1]?._id ===
+        fetchedMessages[fetchedMessages.length - 1]?._id
+    ) {
+      return prev;
+    }
+
+    return fetchedMessages;
+  });
+}, [fetchedMessages]);
+
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -522,8 +561,8 @@ const Messages = () => {
     onSuccess: (updatedMessage) => {
       setMessages((prev) =>
         prev.map((msg) =>
-          msg._id === updatedMessage._id ? updatedMessage : msg
-        )
+          msg._id === updatedMessage._id ? updatedMessage : msg,
+        ),
       );
       setEditingMessage(null);
       toast.success("Message updated");
@@ -545,6 +584,13 @@ const Messages = () => {
   // Handle send message
   const handleSend = (e) => {
     e.preventDefault();
+
+    // ❌ Free / expired user send nahi kar sakta
+    if (!canSendMessage) {
+      toast.error("Messaging is available for paid members only.");
+      return;
+    }
+
     if ((!message.trim() && !file) || !selectedConversation) return;
 
     sendMessageMutation({
@@ -557,6 +603,8 @@ const Messages = () => {
 
   // Handle typing indicator
   const handleTyping = useCallback(() => {
+    if (!canSendMessage) return;
+
     sendTypingIndicator(user.profile_id, selectedConversation?.id, true);
 
     if (typingTimeoutRef.current) {
@@ -566,7 +614,7 @@ const Messages = () => {
     typingTimeoutRef.current = setTimeout(() => {
       sendTypingIndicator(user.profile_id, selectedConversation?.id, false);
     }, 2000);
-  }, [user?.profile_id, selectedConversation?.id]);
+  }, [user?.profile_id, selectedConversation?.id, canSendMessage]);
 
   // Handle file selection
   const handleFileSelect = (type) => {
@@ -598,12 +646,12 @@ const Messages = () => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       const maxSize = type === "image" ? 10 * 1024 * 1024 : 50 * 1024 * 1024;
-      
+
       if (selectedFile.size > maxSize) {
         toast.error(`File size must be less than ${maxSize / (1024 * 1024)}MB`);
         return;
       }
-      
+
       setFile(selectedFile);
       if (type === "image") {
         setMessage("📷 Photo");
@@ -687,9 +735,14 @@ const Messages = () => {
   };
 
   // Filter connections based on search
-  const filteredConnections = connectionsData.profiles.filter((connection) =>
-    connection.user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    connection.user.residing_city?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredConnections = connectionsData.profiles.filter(
+    (connection) =>
+      connection.user.full_name
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      connection.user.residing_city
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()),
   );
 
   // Message date grouping
@@ -708,7 +761,7 @@ const Messages = () => {
   const messageGroups = groupMessagesByDate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 pt-16 md:pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 pt-16 md:pt-20 mt-10">
       <div className="container mx-auto h-[calc(100vh-64px)] md:h-[calc(100vh-80px)]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -721,7 +774,7 @@ const Messages = () => {
               initial={{ x: -300 }}
               animate={{ x: 0 }}
               exit={{ x: -300 }}
-              className="md:w-80 lg:w-96 border-r border-gray-200 flex flex-col h-full absolute md:relative z-50 bg-white w-full md:w-auto"
+              className="md:w-80 lg:w-96 border-r border-gray-200 flex flex-col h-full absolute md:relative z-10 bg-white w-full md:w-auto"
             >
               {/* Sidebar Header */}
               <div className="p-4 border-b border-gray-100">
@@ -739,7 +792,7 @@ const Messages = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Search Bar */}
                 <div className="relative">
                   <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -777,7 +830,9 @@ const Messages = () => {
                           setShowSidebar(false);
                         }}
                         className={`w-full p-4 flex items-center gap-3 hover:bg-gray-50 transition-all duration-200 ${
-                          isActive ? "bg-blue-50 border-r-2 border-blue-500" : ""
+                          isActive
+                            ? "bg-blue-50 border-r-2 border-blue-500"
+                            : ""
                         }`}
                       >
                         <div className="relative">
@@ -799,8 +854,7 @@ const Messages = () => {
                             </span>
                           </div>
                           <p className="text-sm text-gray-600 truncate mb-1">
-                            {connection.last_message?.text ||
-                              "No messages yet"}
+                            {connection.last_message?.text || "No messages yet"}
                           </p>
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-gray-400">
@@ -825,7 +879,8 @@ const Messages = () => {
                       No conversations yet
                     </h3>
                     <p className="text-gray-500 text-sm">
-                      Start a conversation with someone who accepted your interest
+                      Start a conversation with someone who accepted your
+                      interest
                     </p>
                   </div>
                 )}
@@ -834,18 +889,25 @@ const Messages = () => {
           )}
 
           {/* Main chat area */}
-          <div className="flex-1 flex flex-col h-full relative">
+          <div className="flex-1 flex flex-col z-0 h-full relative">
             {selectedConversation ? (
               <>
                 {/* Chat Header */}
                 <div className="p-4 border-b border-gray-200 bg-white flex items-center justify-between">
                   <div className="flex items-center gap-3">
+                    {/* 🔙 Back to Conversations */}
                     <button
-                      onClick={() => setShowSidebar(true)}
-                      className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+                      onClick={() => {
+                        setShowSidebar(true);
+                        setSelectedConversation(null);
+                      }}
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      title="Back to conversations"
                     >
-                      <FiMenu className="w-5 h-5 text-gray-600" />
+                      <FiArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
+
+                    {/* Profile + Name */}
                     <div className="flex items-center gap-3">
                       <div className="relative">
                         <img
@@ -855,34 +917,16 @@ const Messages = () => {
                         />
                         <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"></div>
                       </div>
+
                       <div>
                         <h3 className="font-semibold text-gray-800">
                           {selectedConversation.user.full_name}
                         </h3>
                         <p className="text-sm text-gray-500">
-                          {isTyping ? (
-                            <TypingIndicator />
-                          ) : (
-                            <span className="flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                              Online
-                            </span>
-                          )}
+                          {isTyping ? <TypingIndicator /> : "Online"}
                         </p>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-1">
-                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                      <FiVideo className="w-5 h-5 text-gray-600" />
-                    </button>
-                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                      <FiPhone className="w-5 h-5 text-gray-600" />
-                    </button>
-                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                      <FiInfo className="w-5 h-5 text-gray-600" />
-                    </button>
                   </div>
                 </div>
 
@@ -904,148 +948,159 @@ const Messages = () => {
                         No messages yet
                       </h3>
                       <p className="text-gray-600 text-center max-w-md">
-                        Start the conversation by sending a message to {selectedConversation.user.full_name}
+                        Start the conversation by sending a message to{" "}
+                        {selectedConversation.user.full_name}
                       </p>
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {Object.entries(messageGroups).map(([date, dateMessages]) => (
-                        <div key={date}>
-                          {/* Date Separator */}
-                          <div className="flex justify-center my-6">
-                            <span className="px-4 py-2 bg-white border border-gray-200 text-gray-600 text-sm rounded-full shadow-sm">
-                              {formatDate(date, "DD MMMM YYYY")}
-                            </span>
-                          </div>
+                      {Object.entries(messageGroups).map(
+                        ([date, dateMessages]) => (
+                          <div key={date}>
+                            {/* Date Separator */}
+                            <div className="flex justify-center my-6">
+                              <span className="px-4 py-2 bg-white border border-gray-200 text-gray-600 text-sm rounded-full shadow-sm">
+                                {formatDate(date, "DD MMMM YYYY")}
+                              </span>
+                            </div>
 
-                          {/* Messages for this date */}
-                          <div className="space-y-3">
-                            {dateMessages.map((msg) => {
-                              const isOwn =
-                                msg.sender_profile_id === user.profile_id;
+                            {/* Messages for this date */}
+                            <div className="space-y-3">
+                              {dateMessages.map((msg) => {
+                                const isOwn =
+                                  msg.sender_profile_id === user.profile_id;
 
-                              return (
-                                <motion.div
-                                  key={msg._id}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  className={`flex ${isOwn ? "justify-end" : "justify-start"} group`}
-                                  onContextMenu={(e) => {
-                                    e.preventDefault();
-                                    setSelectedMessage(msg);
-                                  }}
-                                >
-                                  <div className="relative max-w-lg">
-                                    {/* Sender Info (for received messages) */}
-                                    {!isOwn && (
-                                      <div className="flex items-center gap-2 mb-1 ml-2">
-                                        <span className="text-xs font-medium text-gray-700">
-                                          {selectedConversation.user.full_name}
-                                        </span>
-                                        <span className="text-xs text-gray-400">
-                                          {formatDate(msg.createdAt, "HH:mm")}
-                                        </span>
-                                      </div>
-                                    )}
-
-                                    {/* Message Bubble */}
-                                    <div
-                                      className={`relative rounded-2xl px-4 py-3 ${
-                                        isOwn
-                                          ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-br-none"
-                                          : "bg-white text-gray-800 rounded-bl-none shadow-sm border border-gray-100"
-                                      }`}
-                                    >
-                                      {/* Message Content */}
-                                      {editingMessage?._id === msg._id ? (
-                                        <div className="flex gap-2">
-                                          <input
-                                            defaultValue={msg.text}
-                                            autoFocus
-                                            className="flex-1 bg-transparent border-b border-white/30 outline-none"
-                                            onBlur={() => setEditingMessage(null)}
-                                            onKeyDown={(e) => {
-                                              if (e.key === "Enter") {
-                                                updateMessageMutation({
-                                                  id: msg._id,
-                                                  text: e.target.value,
-                                                });
-                                              }
-                                              if (e.key === "Escape") {
-                                                setEditingMessage(null);
-                                              }
-                                            }}
-                                          />
+                                return (
+                                  <motion.div
+                                    key={msg._id}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className={`flex ${isOwn ? "justify-end" : "justify-start"} group`}
+                                    onContextMenu={(e) => {
+                                      e.preventDefault();
+                                      setSelectedMessage(msg);
+                                    }}
+                                  >
+                                    <div className="relative max-w-lg">
+                                      {/* Sender Info (for received messages) */}
+                                      {!isOwn && (
+                                        <div className="flex items-center gap-2 mb-1 ml-2">
+                                          <span className="text-xs font-medium text-gray-700">
+                                            {
+                                              selectedConversation.user
+                                                .full_name
+                                            }
+                                          </span>
+                                          <span className="text-xs text-gray-400">
+                                            {formatDate(msg.createdAt, "HH:mm")}
+                                          </span>
                                         </div>
-                                      ) : (
-                                        renderMessageContent(msg)
                                       )}
 
-                                      {/* Message Status and Time */}
+                                      {/* Message Bubble */}
                                       <div
-                                        className={`flex items-center justify-end gap-2 mt-2 ${
-                                          isOwn ? "text-blue-200" : "text-gray-500"
+                                        className={`relative rounded-2xl px-4 py-3 ${
+                                          isOwn
+                                            ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-br-none"
+                                            : "bg-white text-gray-800 rounded-bl-none shadow-sm border border-gray-100"
                                         }`}
                                       >
-                                        {isOwn && (
-                                          <>
-                                            {msg.read_status ? (
-                                              <MdDoneAll className="w-4 h-4" />
-                                            ) : (
-                                              <FiCheck className="w-4 h-4" />
-                                            )}
-                                          </>
+                                        {/* Message Content */}
+                                        {editingMessage?._id === msg._id ? (
+                                          <div className="flex gap-2">
+                                            <input
+                                              defaultValue={msg.text}
+                                              autoFocus
+                                              className="flex-1 bg-transparent border-b border-white/30 outline-none"
+                                              onBlur={() =>
+                                                setEditingMessage(null)
+                                              }
+                                              onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                  updateMessageMutation({
+                                                    id: msg._id,
+                                                    text: e.target.value,
+                                                  });
+                                                }
+                                                if (e.key === "Escape") {
+                                                  setEditingMessage(null);
+                                                }
+                                              }}
+                                            />
+                                          </div>
+                                        ) : (
+                                          renderMessageContent(msg)
                                         )}
-                                        <span className="text-xs">
-                                          {formatDate(msg.createdAt, "HH:mm")}
-                                        </span>
-                                      </div>
-                                    </div>
 
-                                    {/* Message Actions Menu */}
-                                    <AnimatePresence>
-                                      {selectedMessage?._id === msg._id && (
-                                        <motion.div
-                                          initial={{ opacity: 0, scale: 0.9 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          exit={{ opacity: 0, scale: 0.9 }}
-                                          className="absolute top-1/2 -translate-y-1/2 bg-white shadow-xl rounded-lg py-1 z-50 border border-gray-200"
-                                          style={{
-                                            [isOwn ? "right" : "left"]: "calc(100% + 8px)",
-                                          }}
+                                        {/* Message Status and Time */}
+                                        <div
+                                          className={`flex items-center justify-end gap-2 mt-2 ${
+                                            isOwn
+                                              ? "text-blue-200"
+                                              : "text-gray-500"
+                                          }`}
                                         >
                                           {isOwn && (
+                                            <>
+                                              {msg.read_status ? (
+                                                <MdDoneAll className="w-4 h-4" />
+                                              ) : (
+                                                <FiCheck className="w-4 h-4" />
+                                              )}
+                                            </>
+                                          )}
+                                          <span className="text-xs">
+                                            {formatDate(msg.createdAt, "HH:mm")}
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      {/* Message Actions Menu */}
+                                      <AnimatePresence>
+                                        {selectedMessage?._id === msg._id && (
+                                          <motion.div
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            className="absolute top-1/2 -translate-y-1/2 bg-white shadow-xl rounded-lg py-1 z-50 border border-gray-200"
+                                            style={{
+                                              [isOwn ? "right" : "left"]:
+                                                "calc(100% + 8px)",
+                                            }}
+                                          >
+                                            {isOwn && (
+                                              <button
+                                                onClick={() => {
+                                                  setEditingMessage(msg);
+                                                  setSelectedMessage(null);
+                                                }}
+                                                className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700"
+                                              >
+                                                <FiEdit2 className="w-4 h-4" />
+                                                Edit
+                                              </button>
+                                            )}
                                             <button
                                               onClick={() => {
-                                                setEditingMessage(msg);
+                                                deleteMessageMutation(msg._id);
                                                 setSelectedMessage(null);
                                               }}
-                                              className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700"
+                                              className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-red-600"
                                             >
-                                              <FiEdit2 className="w-4 h-4" />
-                                              Edit
+                                              <FiTrash2 className="w-4 h-4" />
+                                              Delete
                                             </button>
-                                          )}
-                                          <button
-                                            onClick={() => {
-                                              deleteMessageMutation(msg._id);
-                                              setSelectedMessage(null);
-                                            }}
-                                            className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-red-600"
-                                          >
-                                            <FiTrash2 className="w-4 h-4" />
-                                            Delete
-                                          </button>
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
-                                  </div>
-                                </motion.div>
-                              );
-                            })}
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
+                                    </div>
+                                  </motion.div>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ),
+                      )}
                       <div ref={messagesEndRef} />
                     </div>
                   )}
@@ -1075,12 +1130,13 @@ const Messages = () => {
                     <div className="relative">
                       <button
                         type="button"
+                        disabled={!canSendMessage}
                         onClick={() => setShowAttachMenu(!showAttachMenu)}
-                        className="p-3 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                        className="p-3 bg-gray-100 hover:bg-gray-200 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <FiPaperclip className="w-5 h-5 text-gray-600" />
                       </button>
-                      
+
                       <AnimatePresence>
                         {showAttachMenu && (
                           <motion.div
@@ -1123,6 +1179,14 @@ const Messages = () => {
                       </AnimatePresence>
                     </div>
 
+                    {!canSendMessage && (
+                      <div className="mb-3 mt-1 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
+                        🔒 You can receive messages, but sending messages is
+                        available for
+                        <strong> paid members only</strong>.
+                      </div>
+                    )}
+
                     {/* Message Input */}
                     <div className="flex-1 relative">
                       <textarea
@@ -1143,7 +1207,7 @@ const Messages = () => {
                           }
                         }}
                       />
-                      
+
                       {/* Emoji Button */}
                       <button
                         type="button"
@@ -1170,9 +1234,15 @@ const Messages = () => {
                     {/* Send Button */}
                     <button
                       type="submit"
-                      disabled={isSending || (!message.trim() && !file)}
+                      disabled={
+                        isSending ||
+                        (!message.trim() && !file) ||
+                        !canSendMessage
+                      }
                       className={`p-3 rounded-full transition-all duration-200 ${
-                        isSending || (!message.trim() && !file)
+                        isSending ||
+                        (!message.trim() && !file) ||
+                        !canSendMessage
                           ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                           : "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-md"
                       }`}
@@ -1214,8 +1284,8 @@ const Messages = () => {
                   Your Messages
                 </h3>
                 <p className="text-gray-600 max-w-md mb-8">
-                  Select a conversation from the list to start messaging. 
-                  You can only message users who have accepted your interest.
+                  Select a conversation from the list to start messaging. You
+                  can only message users who have accepted your interest.
                 </p>
                 <button
                   onClick={() => navigate("/browse")}

@@ -103,29 +103,6 @@ const Register = () => {
         isAdmin ? "bg-yellow-50 border border-yellow-300" : "bg-white"
       }`}
     >
-      {/* <div className="flex justify-end mb-4">
-        <button
-          onClick={toggleMode}
-          className="flex items-center gap-2 px-4 py-2 rounded border text-sm font-medium transition hover:bg-neutral-100"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-primary-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.64-2.855A9.003 9.003 0 0112 21a9.003 9.003 0 01-8.223-5.03M20 20v-5h-.581"
-            />
-          </svg>
-          Switch to {isAdmin ? "User" : "Admin"} Mode
-        </button>
-      </div> */}
-
       {isAdmin && (
         <div className="mb-2 flex items-center gap-2 text-yellow-700 font-semibold">
           <svg
@@ -147,7 +124,7 @@ const Register = () => {
       )}
 
       <h2 className="text-3xl font-bold mb-6">
-        {isAdmin ? "Admin Registration" : "Create Your Profile"}
+        {isAdmin ? "Admin Registration" : "Create Your Account"}
       </h2>
       <p className="text-neutral-600 mb-8">
         {isAdmin
@@ -297,31 +274,6 @@ const Register = () => {
               <p className="text-red-500 text-sm">{formErrors.username}</p>
             )}
           </div>
-
-          {/* Mobile */}
-          {/* <div>
-            <label
-              htmlFor="mobile"
-              className="block text-sm font-medium text-neutral-700 mb-1"
-            >
-              Mobile Number *
-            </label>
-            <input
-              type="text"
-              id="mobile"
-              name="mobile"
-              value={userData.mobile}
-              onChange={handleUserChange}
-              className={`input ${formErrors.mobile ? "border-red-500" : ""}`}
-              placeholder="Enter your mobile number"
-              maxLength="20"
-            />
-            {formErrors.mobile && (
-              <p className="text-red-500 text-sm">{formErrors.mobile}</p>
-            )}
-          </div> */}
-
-          {/* Submit Button */}
         </div>
 
       </motion.div>
