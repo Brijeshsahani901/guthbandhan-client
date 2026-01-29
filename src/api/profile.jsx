@@ -28,8 +28,6 @@ export const fetchAcceptedProfiles = async () => {
 };
 
 export const getProfile = async (profileId) => {
-  console.log("Calling getProfile API with id:", profileId);
-
   const response = await axiosInstance.get(`/profile/${profileId}`);
   return response.data;
 };

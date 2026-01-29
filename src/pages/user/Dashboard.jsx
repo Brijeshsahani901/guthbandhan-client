@@ -338,14 +338,6 @@ function Dashboard() {
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
       </div>
 
-      {/* Mobile Sidebar Toggle */}
-      <button
-        onClick={() => setSidebarOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white/80 backdrop-blur-sm shadow-lg border border-gray-200"
-      >
-        <FiMenu className="w-6 h-6 text-gray-700" />
-      </button>
-
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pt-20 lg:pt-24">
         
         {/* Header */}

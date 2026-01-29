@@ -72,7 +72,7 @@ const Login = () => {
       navigate("/user/dashboard");
     },
     onError: (error) => {
-      toast.error(error.message || "Login failed. Please try again.");
+      toast.error(error);
     },
   });
 

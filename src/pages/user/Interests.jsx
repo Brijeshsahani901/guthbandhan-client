@@ -342,13 +342,10 @@ const Interests = () => {
               {/* View Profile Button */}
               <button
                 onClick={() => {
-                  console.log(interest)
                   const profileId =
                     tab === "received"
                       ? interest.interest_from_pid
                       : interest.interested_in_pid;
-
-                      console.log(profileId)
 
                   if (profileId) {
                     navigate(`/profile/${profileId}`);

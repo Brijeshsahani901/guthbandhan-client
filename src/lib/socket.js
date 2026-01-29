@@ -221,8 +221,6 @@ const disconnectSocket = () => {
     Object.keys(listeners).forEach(key => {
       listeners[key] = [];
     });
-    
-    console.log("Socket disconnected and cleaned up");
   }
 };
 
@@ -259,7 +257,6 @@ const listeners = {
 
 export const initSocket = (userProfileId) => {
   if (socket && isConnected) {
-    console.log("Socket already connected");
     return socket;
   }
 
@@ -291,7 +288,6 @@ const setupSocketListeners = () => {
   if (!socket) return;
 
   socket.on("connect", () => {
-    console.log("✅ Socket connected:", socket.id);
     isConnected = true;
     
     socket.emit("register", profileId);
@@ -300,42 +296,34 @@ const setupSocketListeners = () => {
   });
 
   socket.on("registered", (data) => {
-    console.log("🔗 Registered with server:", data);
     listeners.registered.forEach(callback => callback(data));
   });
 
   socket.on("receive_message", (message) => {
-    console.log("📩 Received message:", message);
     listeners.receive_message.forEach(callback => callback(message));
   });
 
   socket.on("message_sent", (confirmation) => {
-    console.log("✅ Message sent confirmation:", confirmation);
     listeners.message_sent.forEach(callback => callback(confirmation));
   });
 
   socket.on("message_updated", (message) => {
-    console.log("✏️ Message updated:", message);
     // Add event for message updates
   });
 
   socket.on("message_deleted", (data) => {
-    console.log("🗑️ Message deleted:", data);
     // Add event for message deletion
   });
 
   socket.on("user_typing", (data) => {
-    console.log("⌨️ User typing:", data);
     listeners.user_typing.forEach(callback => callback(data));
   });
 
   socket.on("messages_read", (data) => {
-    console.log("👁️ Messages read:", data);
     listeners.messages_read.forEach(callback => callback(data));
   });
 
   socket.on("disconnect", (reason) => {
-    console.log("🔴 Socket disconnected:", reason);
     isConnected = false;
     listeners.disconnect.forEach(callback => callback({ reason }));
   });

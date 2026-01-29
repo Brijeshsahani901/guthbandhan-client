@@ -1951,8 +1951,6 @@ const EditProfile = () => {
 
   const baseurl = import.meta.env.VITE_BASE_URL;
   const targetProfileId = urlProfileId || user?.profile_id;
-  console.log(targetProfileId);
-
   // Available interest options (5 choices max)
   const interestOptions = [
     "Music",
@@ -2073,15 +2071,11 @@ const EditProfile = () => {
     refetchOnMount: true,
   });
 
-  console.log(targetProfileId)
-
   useEffect(() => {
     if (urlProfileId) {
       setIsEditingOtherProfile(true);
     }
   }, [urlProfileId]);
-
-  console.log(profileData);
 
   useEffect(() => {
     if (profileData?.profile) {
@@ -2389,8 +2383,6 @@ const handleSubmit = () => {
     }
   };
 
-  console.log("Submitting data:", dataToSend); // Debug log
-
   if (isNewProfile) {
     createMutation.mutate(dataToSend);
   } else {
@@ -2408,8 +2400,6 @@ const handleSubmit = () => {
 
 // EditProfile.jsx में सिर्फ ये function बदलें:
 const handleLocationChange = (field, value) => {
-  console.log(`Updating ${field} to:`, value); // Debug log
-  
   setFormData((prev) => ({
     ...prev,
     [field]: value,
